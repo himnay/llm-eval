@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: llm-eval
+  main:
+    web-application-type: none
+
+eval:
+  dataset-path: classpath:golden-dataset.json
+  report-path: ${EVAL_REPORT_PATH:eval-report.md}
+  systems:
+    - name: rag-pipeline (vector)
+      url: ${RAG_PIPELINE_URL:http://localhost:8081}/api/v1/generate
+      question-field: query
+      answer-field: answer
+    - name: rag-vectorless (BM25)
+      url: ${RAG_VECTORLESS_URL:http://localhost:8092}/api/rag/chat
+      question-field: question
+      answer-field: answer
+    - name: rag-graph (Neo4j)
+      url: ${RAG_GRAPH_URL:http://localhost:8093}/api/v1/rag/query
+      question-field: question
+      answer-field: answer
+    - name: okf (index navigation)
+      url: ${OKF_URL:http://localhost:8090}/api/v1/okf/chat
+      question-field: question
+      answer-field: answer
+
+logging:
+  level:
+    com.org.llm.eval: INFO
