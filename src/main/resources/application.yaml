@@ -7,6 +7,7 @@ spring:
 eval:
   dataset-path: classpath:golden-dataset.json
   report-path: ${EVAL_REPORT_PATH:eval-report.md}
+  request-timeout-seconds: ${EVAL_REQUEST_TIMEOUT_SECONDS:30}
   systems:
     - name: rag-pipeline (vector)
       url: ${RAG_PIPELINE_URL:http://localhost:8081}/api/v1/generate

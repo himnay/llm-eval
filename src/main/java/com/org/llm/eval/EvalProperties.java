@@ -20,6 +20,7 @@ import java.util.Map;
 public record EvalProperties(
         String datasetPath,
         String reportPath,
+        int requestTimeoutSeconds,
         List<SystemUnderTest> systems) {
 
     public record SystemUnderTest(

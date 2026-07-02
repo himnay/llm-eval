@@ -1,8 +1,8 @@
 package com.org.llm.eval;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -33,7 +33,6 @@ public class EvalRunner implements CommandLineRunner {
 
     private final EvalProperties properties;
     private final ObjectMapper objectMapper;
-    private final RestClient.Builder restClientBuilder;
 
     @Override
     public void run(String... args) throws Exception {
@@ -41,8 +40,8 @@ public class EvalRunner implements CommandLineRunner {
         log.info("EVAL | {} questions x {} systems", dataset.size(), properties.systems().size());
 
         List<Result> results = new ArrayList<>();
+        RestClient client = buildClient();
         for (EvalProperties.SystemUnderTest system : properties.systems()) {
-            RestClient client = restClientBuilder.build();
             for (GoldenQuestion question : dataset) {
                 results.add(evaluate(client, system, question));
             }
@@ -77,6 +76,17 @@ public class EvalRunner implements CommandLineRunner {
             log.warn("EVAL | system={} question={} FAILED | {}", system.name(), q.id(), e.getMessage());
             return new Result(system.name(), q.id(), 0, latencyMs, 0, e.getMessage());
         }
+    }
+
+    /** Bounded connect/read timeouts so one hung system can't stall the whole evaluation. */
+    private RestClient buildClient() {
+        int timeout = properties.requestTimeoutSeconds() > 0 ? properties.requestTimeoutSeconds() : 30;
+        var factory = new org.springframework.http.client.JdkClientHttpRequestFactory(
+                java.net.http.HttpClient.newBuilder()
+                        .connectTimeout(java.time.Duration.ofSeconds(5))
+                        .build());
+        factory.setReadTimeout(java.time.Duration.ofSeconds(timeout));
+        return RestClient.builder().requestFactory(factory).build();
     }
 
     private List<GoldenQuestion> loadDataset() throws Exception {
