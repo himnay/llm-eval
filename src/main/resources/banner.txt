@@ -1,0 +1,17 @@
+ _     _     __  __       _____            _ 
+| |   | |   |  \/  |     | ____|_   ____ _| |
+| |   | |   | |\/| |_____|  _| \ \ / / _` | |
+| |___| |___| |  | |_____| |___ \ V / (_| | |
+|_____|_____|_|  |_|     |_____| \_/ \__,_|_|
+                                             
+
+LLM :: Eval Harness
+
+:: Project Metadata ::
+- Project Name      : LLM :: Eval Harness
+- Description       : Golden-dataset evaluation harness comparing the retrieval systems (vector RAG, vectorless RAG, graph RAG, OKF) on accuracy, latency and answer size
+- Group Id          : com.org.llm
+- Artifact Id       : llm-eval
+- Project Version   : 1.0.0
+- Spring Boot       : ${spring-boot.version}
+- Java Version      : ${java.version}
