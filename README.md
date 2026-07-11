@@ -1,5 +1,7 @@
 # llm-eval — Golden-Dataset Evaluation Harness
 
+<img src="image/spring-logo.png" alt="logo" width="80"/>
+
 `llm-eval` is a small, deliberately boring Spring Boot CLI application with one job: ask the same
 set of questions to every retrieval system in this workspace, score the answers, and produce a
 markdown report that says — objectively, repeatably, and without a human re-reading five chat
