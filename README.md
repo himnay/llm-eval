@@ -26,19 +26,19 @@ realistic LLM development lifecycle.
 
 ## Table of contents
 
-1. [Why evaluating LLM output is hard](#why-evaluating-llm-output-is-hard)
-2. [The scoring methodology this repo implements](#the-scoring-methodology-this-repo-implements)
-3. [Architecture: how `EvalRunner` orchestrates an evaluation run](#architecture-how-evalrunner-orchestrates-an-evaluation-run)
-4. [The eval pipeline, end to end](#the-eval-pipeline-end-to-end)
-5. [Configuration model — `EvalProperties`](#configuration-model--evalproperties)
-6. [The golden dataset](#the-golden-dataset)
-7. [The generated report](#the-generated-report)
-8. [Failure handling and resilience](#failure-handling-and-resilience)
-9. [Where this fits in an LLM development workflow](#where-this-fits-in-an-llm-development-workflow)
-10. [Running it](#running-it)
-11. [Extending the dataset](#extending-the-dataset)
-12. [Known limitations and natural next steps](#known-limitations-and-natural-next-steps)
-13. [Project layout](#project-layout)
+1. 🤖 [Why evaluating LLM output is hard](#why-evaluating-llm-output-is-hard)
+2. 🔹 [The scoring methodology this repo implements](#the-scoring-methodology-this-repo-implements)
+3. 🔀 [Architecture: how `EvalRunner` orchestrates an evaluation run](#architecture-how-evalrunner-orchestrates-an-evaluation-run)
+4. 🏷️ [The eval pipeline, end to end](#the-eval-pipeline-end-to-end)
+5. 🤖 [Configuration model — `EvalProperties`](#configuration-model--evalproperties)
+6. 🔹 [The golden dataset](#the-golden-dataset)
+7. 🔹 [The generated report](#the-generated-report)
+8. 🛡️ [Failure handling and resilience](#failure-handling-and-resilience)
+9. 🤖 [Where this fits in an LLM development workflow](#where-this-fits-in-an-llm-development-workflow)
+10. 🚀 [Running it](#running-it)
+11. 🔹 [Extending the dataset](#extending-the-dataset)
+12. 🔹 [Known limitations and natural next steps](#known-limitations-and-natural-next-steps)
+13. 🏗️ [Project layout](#project-layout)
 
 ---
 
