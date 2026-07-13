@@ -42,7 +42,8 @@ realistic LLM development lifecycle.
 
 ---
 
-## Why evaluating LLM output is hard
+<a id="why-evaluating-llm-output-is-hard"></a>
+## 1. 🤖 Why evaluating LLM output is hard
 
 Testing a deterministic function is easy: give it an input, assert on the exact output. Testing an
 LLM-backed system is not, for a few compounding reasons that this harness's design directly reacts
@@ -88,7 +89,8 @@ This repo answers each of those problems with a specific, deliberate design choi
 
 ---
 
-## The scoring methodology this repo implements
+<a id="the-scoring-methodology-this-repo-implements"></a>
+## 2. 🔹 The scoring methodology this repo implements
 
 The entire scoring engine lives in one file, `AnswerScorer`
 (`src/main/java/com/org/llm/eval/AnswerScorer.java`), and it implements exactly one strategy:
@@ -174,7 +176,8 @@ flowchart TD
 
 ---
 
-## Architecture: how `EvalRunner` orchestrates an evaluation run
+<a id="architecture-how-evalrunner-orchestrates-an-evaluation-run"></a>
+## 3. 🔀 Architecture: how `EvalRunner` orchestrates an evaluation run
 
 `EvalRunner` (`src/main/java/com/org/llm/eval/EvalRunner.java`) is a Spring
 `CommandLineRunner` — it is not a web controller and the app itself boots with
@@ -261,7 +264,8 @@ the very end.
 
 ---
 
-## The eval pipeline, end to end
+<a id="the-eval-pipeline-end-to-end"></a>
+## 4. 🏷️ The eval pipeline, end to end
 
 ```mermaid
 flowchart LR
@@ -351,7 +355,8 @@ percentiles reported by other tooling.
 
 ---
 
-## Configuration model — `EvalProperties`
+<a id="configuration-model--evalproperties"></a>
+## 5. 🤖 Configuration model — `EvalProperties`
 
 Everything the runner needs to know about *what to evaluate* and *where results go* is a single
 `@ConfigurationProperties(prefix = "eval")` record, bound automatically at startup by
@@ -391,7 +396,8 @@ local, a canary build, etc.) — never requires touching `EvalRunner.java`.
 
 ---
 
-## The golden dataset
+<a id="the-golden-dataset"></a>
+## 6. 🔹 The golden dataset
 
 `src/main/resources/golden-dataset.json` is the rubric — the fixed, versioned set of questions and
 the facts a correct answer to each one must contain. Each entry deserializes into a
@@ -426,7 +432,8 @@ Two things worth calling out about this dataset as written:
 
 ---
 
-## The generated report
+<a id="the-generated-report"></a>
+## 7. 🔹 The generated report
 
 Every run overwrites `eval-report.md` (or wherever `eval.report-path` points) with a fresh
 timestamped document. A prior run's output, checked in at the repo root, shows the shape concretely
@@ -468,7 +475,8 @@ silently omitted.
 
 ---
 
-## Failure handling and resilience
+<a id="failure-handling-and-resilience"></a>
+## 8. 🛡️ Failure handling and resilience
 
 Resilience is not bolted on after the fact here — it's structural, built from three small decisions
 that compound:
@@ -496,7 +504,8 @@ doing local development (with only one of four services running) will be in most
 
 ---
 
-## Where this fits in an LLM development workflow
+<a id="where-this-fits-in-an-llm-development-workflow"></a>
+## 9. 🤖 Where this fits in an LLM development workflow
 
 A harness like this earns its keep once you treat prompts, retrieval configuration, and even model
 choice as things that can regress — the same way a code change can regress a unit test. The natural
@@ -558,7 +567,8 @@ Concretely, this maps onto familiar software-engineering habits:
 
 ---
 
-## Running it
+<a id="running-it"></a>
+## 10. 🚀 Running it
 
 ```bash
 # start whichever target systems you want to compare, then:
@@ -588,7 +598,8 @@ mvn test
 
 ---
 
-## Extending the dataset
+<a id="extending-the-dataset"></a>
+## 11. 🔹 Extending the dataset
 
 Add entries to `src/main/resources/golden-dataset.json`:
 
@@ -619,7 +630,8 @@ Guidelines that follow directly from how `AnswerScorer` works:
 
 ---
 
-## Known limitations and natural next steps
+<a id="known-limitations-and-natural-next-steps"></a>
+## 12. 🔹 Known limitations and natural next steps
 
 Being explicit about what this harness does *not* do is as useful as documenting what it does:
 
@@ -642,7 +654,8 @@ Being explicit about what this harness does *not* do is as useful as documenting
 
 ---
 
-## Project layout
+<a id="project-layout"></a>
+## 13. 🏗️ Project layout
 
 ```
 src/main/java/com/org/llm/eval/
