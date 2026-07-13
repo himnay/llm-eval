@@ -420,6 +420,8 @@ fictional internal knowledge base that all four RAG/OKF systems are presumably i
 
 Two things worth calling out about this dataset as written:
 
+<ul>
+
 - It is explicitly a **starter/placeholder** dataset (per the original authoring intent) — the
   questions are grounded in a fictional corpus, not a specific real one. Anyone adopting this
   harness for real is expected to replace these five entries with questions grounded in whatever
@@ -429,6 +431,8 @@ Two things worth calling out about this dataset as written:
   above: it will match "Postgres 18", but it would *also* match inside an unrelated number like
   "180" or a date. Short, generic keywords like bare version numbers are exactly the case where
   keyword recall's simplicity shows its cost.
+
+</ul>
 
 ---
 
@@ -537,6 +541,8 @@ flowchart TD
 
 Concretely, this maps onto familiar software-engineering habits:
 
+<ul>
+
 - **It's a regression test for prompts.** Changing a system prompt or a few-shot example is exactly
   as risky as changing application logic — it can silently break behavior that used to work. Running
   the golden dataset before and after a prompt edit turns "I think that phrasing tweak was safe" into
@@ -564,6 +570,8 @@ Concretely, this maps onto familiar software-engineering habits:
   need that finer signal are expected to graduate to an LLM-as-judge scorer for a subset of
   high-value questions, layered on top of (not instead of) this fast deterministic check — exactly
   the upgrade path the `AnswerScorer` Javadoc calls out.
+
+</ul>
 
 ---
 
@@ -613,6 +621,8 @@ Add entries to `src/main/resources/golden-dataset.json`:
 
 Guidelines that follow directly from how `AnswerScorer` works:
 
+<ul>
+
 - **Keep keywords short, factual, and unambiguous.** They are matched as case-insensitive
   *substrings*, not tokenized words and not semantically matched — a keyword like `"sql"` will match
   inside `"postgresql"`, and a keyword like `"18"` will match inside `"180"`. Prefer keywords
@@ -628,12 +638,16 @@ Guidelines that follow directly from how `AnswerScorer` works:
   questions grounded in the corpus that is actually ingested into the vector/graph/BM25 indexes and
   the OKF index being compared.
 
+</ul>
+
 ---
 
 <a id="known-limitations-and-natural-next-steps"></a>
 ## 12. 🔹 Known limitations and natural next steps
 
 Being explicit about what this harness does *not* do is as useful as documenting what it does:
+
+<ul>
 
 - **Sequential execution.** Systems and questions are evaluated in a nested loop with no
   concurrency; total run time scales linearly with `systems × questions`. Parallelizing across
@@ -651,6 +665,8 @@ Being explicit about what this harness does *not* do is as useful as documenting
   is not a claim any statistical test backs up — the dataset here is a five-question starter. A
   larger, more diverse golden dataset is a prerequisite for treating small accuracy deltas as
   meaningful rather than noise.
+
+</ul>
 
 ---
 
