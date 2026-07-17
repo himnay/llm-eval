@@ -14,7 +14,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
  */
 @SpringBootApplication
 @ConfigurationPropertiesScan
-public class LlmEvalApplication {
+class LlmEvalApplication {
 
     public static void main(String[] args) {
         new SpringApplication(LlmEvalApplication.class) {
