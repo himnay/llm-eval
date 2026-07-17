@@ -10,12 +10,12 @@ transcripts — which system is actually better today.
 It exists because "the demo looked good" is not a regression test, and because comparing LLM-backed
 systems by eyeballing chat transcripts does not scale past the second system, let alone four.
 
-| System under test            | Repo                          | Endpoint                    |
-|-------------------------------|--------------------------------|------------------------------|
-| Vector RAG (OpenSearch kNN)    | `llm-rag/llm-rag-pipeline`     | `POST /api/v1/generate`      |
-| Vectorless RAG (BM25/PageIndex)| `llm-rag/llm-rag-vectorless`   | `POST /api/rag/chat`         |
-| Graph RAG (Neo4j)              | `llm-rag/llm-rag-graph`        | `POST /api/v1/rag/query`     |
-| OKF (LLM index navigation)     | `llm-OKF/okf-chat`             | `POST /api/v1/okf/chat`      |
+| System under test               | Repo                         | Endpoint                 |
+|---------------------------------|------------------------------|--------------------------|
+| Vector RAG (OpenSearch kNN)     | `llm-rag/llm-rag-pipeline`   | `POST /api/v1/generate`  |
+| Vectorless RAG (BM25/PageIndex) | `llm-rag/llm-rag-vectorless` | `POST /api/rag/chat`     |
+| Graph RAG (Neo4j)               | `llm-rag/llm-rag-graph`      | `POST /api/v1/rag/query` |
+| OKF (LLM index navigation)      | `llm-OKF/okf-chat`           | `POST /api/v1/okf/chat`  |
 
 This document goes well beyond "how to run it." It explains *why* evaluating LLM output is a
 genuinely hard problem, what scoring strategy this repo has chosen (and why), how the runner is
@@ -79,13 +79,13 @@ applied identically and repeatedly to every system. That rubric is the golden da
 
 This repo answers each of those problems with a specific, deliberate design choice:
 
-| Problem                                   | Design response in this repo |
-|--------------------------------------------|-------------------------------|
-| Non-determinism in generated text          | Score on presence of required facts (keywords), not exact string match |
-| No single correct answer                   | Golden dataset encodes *facts that must appear*, not one canonical sentence |
-| Partial correctness                        | Score is a continuous fraction in `[0, 1]` (keyword recall), not pass/fail |
+| Problem                                         | Design response in this repo                                                                                  |
+|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| Non-determinism in generated text               | Score on presence of required facts (keywords), not exact string match                                        |
+| No single correct answer                        | Golden dataset encodes *facts that must appear*, not one canonical sentence                                   |
+| Partial correctness                             | Score is a continuous fraction in `[0, 1]` (keyword recall), not pass/fail                                    |
 | Comparing several systems, some inevitably down | `EvalRunner` catches per-question failures and scores them 0 with an `unavailable` marker instead of aborting |
-| Need for a fixed, repeatable rubric        | `golden-dataset.json` is checked into the repo and versioned like code |
+| Need for a fixed, repeatable rubric             | `golden-dataset.json` is checked into the repo and versioned like code                                        |
 
 ---
 
@@ -121,13 +121,13 @@ it's a pure static utility, not something you're meant to subclass or configure.
 `AnswerScorerTest` (`src/test/java/com/org/llm/eval/AnswerScorerTest.java`) pins down the exact
 scoring rules with five cases, which double as the specification:
 
-| Test | Rule being pinned down |
-|---|---|
-| `fullRecallScoresOne` | All expected keywords present → score `1.0` |
-| `partialRecallScoresFraction` | Half of two expected keywords present → score exactly `0.5` (score is `hits / expectedKeywords.size()`, not a rounded/binned value) |
-| `matchIsCaseInsensitive` | `"PROMETHEUS and Grafana"` matches keywords `"prometheus"`, `"grafana"` — matching lower-cases both sides |
-| `blankAnswerScoresZero` | A blank string (`"  "`) *or* a `null` answer both score `0`, never throw |
-| `emptyKeywordListScoresZero` | A question with an empty `expectedKeywords` list scores `0` even given a non-empty answer — an unscoreable question never accidentally rewards a system with a perfect score by vacuous truth |
+| Test                          | Rule being pinned down                                                                                                                                                                        |
+|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `fullRecallScoresOne`         | All expected keywords present → score `1.0`                                                                                                                                                   |
+| `partialRecallScoresFraction` | Half of two expected keywords present → score exactly `0.5` (score is `hits / expectedKeywords.size()`, not a rounded/binned value)                                                           |
+| `matchIsCaseInsensitive`      | `"PROMETHEUS and Grafana"` matches keywords `"prometheus"`, `"grafana"` — matching lower-cases both sides                                                                                     |
+| `blankAnswerScoresZero`       | A blank string (`"  "`) *or* a `null` answer both score `0`, never throw                                                                                                                      |
+| `emptyKeywordListScoresZero`  | A question with an empty `expectedKeywords` list scores `0` even given a non-empty answer — an unscoreable question never accidentally rewards a system with a perfect score by vacuous truth |
 
 That last rule is easy to get wrong (mathematically, "0 of 0 keywords found" could just as validly
 be treated as 100% recall) and the test exists specifically to lock in the safer choice: an
@@ -166,13 +166,13 @@ flowchart TD
 
 ### Why keyword recall over the alternatives
 
-| Alternative scoring strategy | Why it was not chosen here (yet) |
-|---|---|
-| Exact string match | Fails on any paraphrase; would score almost every real LLM answer as wrong |
-| Edit distance / fuzzy string similarity | Penalizes verbose-but-correct answers; rewards short-but-wrong answers that happen to share characters with the golden text |
-| Embedding cosine similarity | Requires an embedding model call per answer (cost, latency, another moving part to keep deterministic across runs); harder to reason about *why* a score changed |
-| LLM-as-judge | Highest ceiling on nuance, but non-deterministic itself (another LLM call), costs money/tokens per evaluation, and needs its own prompt to be evaluated and versioned — explicitly called out in the code as "the natural upgrade when finer resolution is needed," not the current implementation |
-| **Keyword recall (implemented)** | Deterministic, free, instant, CI-safe; trades nuance for repeatability |
+| Alternative scoring strategy            | Why it was not chosen here (yet)                                                                                                                                                                                                                                                                   |
+|-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Exact string match                      | Fails on any paraphrase; would score almost every real LLM answer as wrong                                                                                                                                                                                                                         |
+| Edit distance / fuzzy string similarity | Penalizes verbose-but-correct answers; rewards short-but-wrong answers that happen to share characters with the golden text                                                                                                                                                                        |
+| Embedding cosine similarity             | Requires an embedding model call per answer (cost, latency, another moving part to keep deterministic across runs); harder to reason about *why* a score changed                                                                                                                                   |
+| LLM-as-judge                            | Highest ceiling on nuance, but non-deterministic itself (another LLM call), costs money/tokens per evaluation, and needs its own prompt to be evaluated and versioned — explicitly called out in the code as "the natural upgrade when finer resolution is needed," not the current implementation |
+| **Keyword recall (implemented)**        | Deterministic, free, instant, CI-safe; trades nuance for repeatability                                                                                                                                                                                                                             |
 
 ---
 
@@ -379,16 +379,16 @@ public record EvalProperties(
 }
 ```
 
-| Property | Meaning | Default (`application.yaml`) |
-|---|---|---|
-| `eval.dataset-path` | Classpath or filesystem location of the golden dataset | `classpath:golden-dataset.json` |
-| `eval.report-path` | Where the markdown report is written | `${EVAL_REPORT_PATH:eval-report.md}` |
-| `eval.request-timeout-seconds` | Per-call HTTP read timeout | `${EVAL_REQUEST_TIMEOUT_SECONDS:30}` |
-| `eval.systems[].name` | Display name used in report tables | — |
-| `eval.systems[].url` | Full endpoint URL (env-var overridable per system, e.g. `RAG_PIPELINE_URL`) | — |
-| `eval.systems[].question-field` | JSON field name the target expects the question in | — |
-| `eval.systems[].answer-field` | JSON field name the target's response carries the answer in | — |
-| `eval.systems[].headers` | Optional static headers (e.g. API keys) | none |
+| Property                        | Meaning                                                                     | Default (`application.yaml`)         |
+|---------------------------------|-----------------------------------------------------------------------------|--------------------------------------|
+| `eval.dataset-path`             | Classpath or filesystem location of the golden dataset                      | `classpath:golden-dataset.json`      |
+| `eval.report-path`              | Where the markdown report is written                                        | `${EVAL_REPORT_PATH:eval-report.md}` |
+| `eval.request-timeout-seconds`  | Per-call HTTP read timeout                                                  | `${EVAL_REQUEST_TIMEOUT_SECONDS:30}` |
+| `eval.systems[].name`           | Display name used in report tables                                          | —                                    |
+| `eval.systems[].url`            | Full endpoint URL (env-var overridable per system, e.g. `RAG_PIPELINE_URL`) | —                                    |
+| `eval.systems[].question-field` | JSON field name the target expects the question in                          | —                                    |
+| `eval.systems[].answer-field`   | JSON field name the target's response carries the answer in                 | —                                    |
+| `eval.systems[].headers`        | Optional static headers (e.g. API keys)                                     | none                                 |
 
 Because every system-specific detail is externalized to YAML/environment variables, comparing a
 fifth candidate system — or re-pointing an existing one at a different deployment (staging vs.
@@ -410,13 +410,13 @@ public record GoldenQuestion(String id, String question, List<String> expectedKe
 The dataset shipped in this repo has five starter questions, each targeting a different aspect of a
 fictional internal knowledge base that all four RAG/OKF systems are presumably indexing:
 
-| id | question | expectedKeywords |
-|---|---|---|
-| `q1-departments` | Which departments exist in the company and who leads engineering? | `engineering`, `department` |
-| `q2-tech-stack` | What technologies does the platform team use for observability? | `prometheus`, `grafana` |
-| `q3-database` | Which relational database do the services use and which version? | `postgres`, `18` |
-| `q4-auth` | How are the internal APIs authenticated? | `keycloak`, `oauth` |
-| `q5-rag-approach` | How does the retrieval pipeline decide which documents are relevant to a query? | `embedding`, `vector` |
+| id                | question                                                                        | expectedKeywords            |
+|-------------------|---------------------------------------------------------------------------------|-----------------------------|
+| `q1-departments`  | Which departments exist in the company and who leads engineering?               | `engineering`, `department` |
+| `q2-tech-stack`   | What technologies does the platform team use for observability?                 | `prometheus`, `grafana`     |
+| `q3-database`     | Which relational database do the services use and which version?                | `postgres`, `18`            |
+| `q4-auth`         | How are the internal APIs authenticated?                                        | `keycloak`, `oauth`         |
+| `q5-rag-approach` | How does the retrieval pipeline decide which documents are relevant to a query? | `embedding`, `vector`       |
 
 Two things worth calling out about this dataset as written:
 
