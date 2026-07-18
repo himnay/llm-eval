@@ -16,6 +16,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @ConfigurationPropertiesScan
 class LlmEvalApplication {
 
+    /** Application entry point. */
     public static void main(String[] args) {
         new SpringApplication(LlmEvalApplication.class) {
             {
