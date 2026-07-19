@@ -1,4 +1,4 @@
-package com.org.llm.eval;
+package com.org.llm.eval.dto;
 
 import java.util.List;
 import java.util.Locale;
@@ -8,15 +8,12 @@ import java.util.Locale;
  * case-insensitive substring match. Deliberately simple and deterministic — it needs no LLM and
  * can run in CI. Swap in an LLM-as-judge scorer once relative rankings need finer resolution.
  */
-final class AnswerScorer {
-
-    private AnswerScorer() {
-    }
+public class AnswerScorer {
 
     /**
      * Returns keyword recall in [0,1]; 0 for null/blank answers or empty keyword lists.
      */
-    static double score(String answer, List<String> expectedKeywords) {
+    public static double score(String answer, List<String> expectedKeywords) {
         if (answer == null || answer.isBlank() || expectedKeywords == null || expectedKeywords.isEmpty()) {
             return 0;
         }

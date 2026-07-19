@@ -1,5 +1,6 @@
 package com.org.llm.eval;
 
+import com.org.llm.eval.dto.AnswerScorer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

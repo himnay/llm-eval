@@ -1,7 +1,9 @@
 package com.org.llm.eval;
 
-import com.anthropic.client.AnthropicClient;
 import com.anthropic.client.okhttp.AnthropicOkHttpClient;
+import com.org.llm.eval.dto.AnswerScorer;
+import com.org.llm.eval.dto.EvalProperties;
+import com.org.llm.eval.dto.GoldenQuestion;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;

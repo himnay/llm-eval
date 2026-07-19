@@ -19,7 +19,7 @@ class LlmEvalApplication {
     /**
      * Application entry point.
      */
-    public static void main(String[] args) {
+    static void main(String[] args) {
         new SpringApplication(LlmEvalApplication.class) {
             {
                 setWebApplicationType(WebApplicationType.NONE);

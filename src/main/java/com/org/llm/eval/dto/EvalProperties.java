@@ -1,4 +1,4 @@
-package com.org.llm.eval;
+package com.org.llm.eval.dto;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -4,6 +4,8 @@ import com.anthropic.client.AnthropicClient;
 import com.anthropic.models.messages.Message;
 import com.anthropic.models.messages.MessageCreateParams;
 import com.anthropic.models.messages.OutputConfig;
+import com.org.llm.eval.dto.AnswerScorer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.regex.Pattern;
  * one API call per (system, question) pair.
  */
 @Slf4j
+@RequiredArgsConstructor
 final class JudgeScorer {
 
     private static final Pattern SCORE_PATTERN = Pattern.compile("([01](?:\\.\\d+)?)");
@@ -24,10 +27,6 @@ final class JudgeScorer {
     private final AnthropicClient client;
     private final String model;
 
-    JudgeScorer(AnthropicClient client, String model) {
-        this.client = client;
-        this.model = model;
-    }
 
     /**
      * Returns a 0.0-1.0 correctness/completeness score, or 0.0 for a blank answer or an
