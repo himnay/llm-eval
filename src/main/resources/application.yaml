@@ -1,31 +1,80 @@
 spring:
   application:
     name: llm-eval
-  main:
-    web-application-type: none
 
 eval:
-  dataset-path: classpath:golden-dataset.json
+  dataset-path: classpath:golden-dataset/*.json
   report-path: ${EVAL_REPORT_PATH:eval-report.md}
-  request-timeout-seconds: ${EVAL_REQUEST_TIMEOUT_SECONDS:30}
+  request-timeout-seconds: ${EVAL_REQUEST_TIMEOUT_SECONDS:120}
+  # LLM-as-judge: set to false to run keyword-recall scoring only (fast, free, no API key needed).
+  # Uses the Anthropic API — resolves credentials via ANTHROPIC_API_KEY / `ant auth login` (see the
+  # claude-api skill). Judge model defaults to claude-opus-4-8.
+  judge-enabled: ${EVAL_JUDGE_ENABLED:true}
+  judge-model: ${EVAL_JUDGE_MODEL:claude-opus-4-8}
   systems:
-    - name: rag-pipeline (vector)
-      url: ${RAG_PIPELINE_URL:http://localhost:8081}/api/v1/generate
-      question-field: query
-      answer-field: answer
-    - name: rag-vectorless (BM25)
-      url: ${RAG_VECTORLESS_URL:http://localhost:8092}/api/rag/chat
-      question-field: question
-      answer-field: answer
-    - name: rag-graph (Neo4j)
-      url: ${RAG_GRAPH_URL:http://localhost:8093}/api/v1/rag/query
-      question-field: question
-      answer-field: answer
-    - name: okf (index navigation)
-      url: ${OKF_URL:http://localhost:8090}/api/v1/okf/chat
-      question-field: question
-      answer-field: answer
-
-logging:
-  level:
-    com.org.llm.eval: INFO
+    # Every entry hits the same local Ollama daemon (http://localhost:11434/api/generate) — only
+    # `model` in extra-request-fields differs. Swapping or adding a locally-downloaded model is a
+    # config-only change: no Java edit needed.
+    - name: qwen3:4b
+      url: ${OLLAMA_URL:http://localhost:11434}/api/generate
+      question-field: prompt
+      answer-field: response
+      extra-request-fields:
+        model: qwen3:4b
+        stream: false
+    - name: qwen2.5-coder:7b
+      url: ${OLLAMA_URL:http://localhost:11434}/api/generate
+      question-field: prompt
+      answer-field: response
+      extra-request-fields:
+        model: qwen2.5-coder:7b
+        stream: false
+    - name: qwen3.6:27b
+      url: ${OLLAMA_URL:http://localhost:11434}/api/generate
+      question-field: prompt
+      answer-field: response
+      extra-request-fields:
+        model: qwen3.6:27b
+        stream: false
+    - name: gemma2:9b
+      url: ${OLLAMA_URL:http://localhost:11434}/api/generate
+      question-field: prompt
+      answer-field: response
+      extra-request-fields:
+        model: gemma2:9b
+        stream: false
+    - name: gemma4:12b
+      url: ${OLLAMA_URL:http://localhost:11434}/api/generate
+      question-field: prompt
+      answer-field: response
+      extra-request-fields:
+        model: gemma4:12b
+        stream: false
+    - name: mistral:latest
+      url: ${OLLAMA_URL:http://localhost:11434}/api/generate
+      question-field: prompt
+      answer-field: response
+      extra-request-fields:
+        model: mistral:latest
+        stream: false
+    - name: deepseek-r1:32b
+      url: ${OLLAMA_URL:http://localhost:11434}/api/generate
+      question-field: prompt
+      answer-field: response
+      extra-request-fields:
+        model: deepseek-r1:32b
+        stream: false
+    - name: llama4:scout
+      url: ${OLLAMA_URL:http://localhost:11434}/api/generate
+      question-field: prompt
+      answer-field: response
+      extra-request-fields:
+        model: llama4:scout
+        stream: false
+    - name: ornith:35b
+      url: ${OLLAMA_URL:http://localhost:11434}/api/generate
+      question-field: prompt
+      answer-field: response
+      extra-request-fields:
+        model: ornith:35b
+        stream: false

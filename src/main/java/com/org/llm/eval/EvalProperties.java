@@ -14,6 +14,8 @@ import java.util.Map;
  *   <li>{@code question-field} — request-body JSON field carrying the question
  *   <li>{@code answer-field} — response-body JSON field carrying the answer
  *   <li>{@code headers} — optional static headers (API keys etc.)
+ *   <li>{@code extra-request-fields} — additional fixed fields merged into every request body
+ *       (e.g. Ollama's {@code model} and {@code stream:false})
  * </ul>
  */
 @ConfigurationProperties(prefix = "eval")
@@ -21,6 +23,8 @@ public record EvalProperties(
         String datasetPath,
         String reportPath,
         int requestTimeoutSeconds,
+        boolean judgeEnabled,
+        String judgeModel,
         List<SystemUnderTest> systems) {
 
     public record SystemUnderTest(
@@ -28,5 +32,7 @@ public record EvalProperties(
             String url,
             String questionField,
             String answerField,
-            Map<String, String> headers) {}
+            Map<String, String> headers,
+            Map<String, Object> extraRequestFields) {
+    }
 }

@@ -13,7 +13,9 @@ final class AnswerScorer {
     private AnswerScorer() {
     }
 
-    /** Returns keyword recall in [0,1]; 0 for null/blank answers or empty keyword lists. */
+    /**
+     * Returns keyword recall in [0,1]; 0 for null/blank answers or empty keyword lists.
+     */
     static double score(String answer, List<String> expectedKeywords) {
         if (answer == null || answer.isBlank() || expectedKeywords == null || expectedKeywords.isEmpty()) {
             return 0;

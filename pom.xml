@@ -7,22 +7,31 @@
         <groupId>com.org.llm</groupId>
         <artifactId>super-pom</artifactId>
         <version>1.0.0</version>
-        <relativePath/>
     </parent>
 
+    <groupId>com.org.llm</groupId>
     <artifactId>llm-eval</artifactId>
-    <version>1.0.0</version>
-    <name>LLM :: Eval Harness</name>
-    <description>Golden-dataset evaluation harness comparing the retrieval systems (vector RAG, vectorless RAG, graph RAG, OKF) on accuracy, latency and answer size</description>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>llm-eval</name>
+    <description>Local LLM model evaluation harness — keyword recall, LLM-as-judge and pairwise arena scoring</description>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!-- LLM-as-judge — version managed by learning-bom via super-pom -->
+        <dependency>
+            <groupId>com.anthropic</groupId>
+            <artifactId>anthropic-java</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -35,4 +44,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
 </project>
