@@ -157,13 +157,26 @@ public record GoldenQuestion(String id, String question, List<String> expectedKe
 
 Topics are mined directly from this author's `learning-*.md` notes (a separate `learning` repo) —
 one or a few source files per JSON output, `id` prefixed per topic (`db-001`, `k8s-001`,
-`spb-001`, ...) so files can grow independently without ID collisions:
+`spb-001`, ...) so files can grow independently without ID collisions. **1,562 questions across 15
+topic files** as of this writing:
 
-| File | Source notes | Topic |
-|---|---|---|
-| `cloud-devops.json` | `learning-cloud-*`, `learning-devops.md` | AWS, Docker, Terraform, PCF, DevOps |
-| `messaging.json` | `learning-messaging-*` | Kafka, Kafka Connect/Streams/Schema Registry, RabbitMQ, Debezium |
-| *(more topics land here incrementally — see below)* | `learning-ai-*`, `learning-architecture-*`, `learning-db-*`, `learning-design-*`, `learning-IAM-*` / `learning-security-*`, `learning-java-*`, `learning-k8s-*`, `learning-observability-*` / `learning-scm-*`, `learning-spring-*`, `learning-test-*` | AI/Spring AI, architecture & DSA, databases, distributed-systems design, security/IAM, Java core/JVM, Kubernetes, observability/SCM, Spring (core, reactive/test, ecosystem), test engineering |
+| File | Questions | Source notes | Topic |
+|---|---|---|---|
+| `ai-springai.json` | 90 | `learning-ai-*` | Claude/Claude Code, AI concepts, Spring AI (chat/MCP/RAG) |
+| `architecture.json` | 75 | `learning-architecture-*` | Clean code, DSA, design patterns, microservices, principles |
+| `cloud-devops.json` | 81 | `learning-cloud-*`, `learning-devops.md` | AWS, Docker, Terraform, PCF, DevOps |
+| `db.json` | 95 | `learning-db-*` | Cassandra, DynamoDB, Elasticsearch, MongoDB, MyBatis, Neo4j, Oracle, Postgres, Redis, vector DBs |
+| `java-core.json` | 134 | `learning-java-26/concurrency/core/faq.md` | Language fundamentals, concurrency primitives, JLS rules |
+| `java-jvm.json` | 132 | `learning-java-gc/jvm/optimization/stream-cheatsheet/threads/virtualthreads.md` | GC algorithms, JVM internals, Stream API, threading |
+| `kubernetes.json` | 104 | `learning-k8s-*` | kubectl, resource kinds, EKS/OpenShift/minikube |
+| `messaging.json` | 105 | `learning-messaging-*` | Kafka (+ Connect/Streams/Schema Registry), RabbitMQ, Debezium |
+| `observability-scm.json` | 90 | `learning-observability-*`, `learning-scm-*` | Dynatrace, logging, Prometheus, Splunk, Git, Gradle, Maven |
+| `security-iam.json` | 95 | `learning-IAM-*`, `learning-security-*` | Active Directory, OpenIDM, OAuth2/OIDC, Spring Security, TLS |
+| `spring-boot-core.json` | 164 | `learning-spring-annotation/boot-core/boot-data/boot-web/cache/patterns.md` | Annotations, bean lifecycle, auto-configuration, data/web layers |
+| `spring-ecosystem.json` | 100 | `learning-spring-batch/camunda/cloud-*/tracing/drools/feign/graphql/grpc/modulith/state-machine/vault.md` | The rest of the Spring module surface |
+| `spring-reactive-test.json` | 132 | `learning-spring-reactive/test/resilience4j/migration.md` | Reactor/WebFlux, Spring test utilities, Resilience4j, version migration |
+| `system-design.json` | 85 | `learning-design-*` | Bloom filters, consistent hashing, CRDTs, sagas, URL shorteners, ... |
+| `testing.json` | 80 | `learning-test-*` | BDD, contract testing, DR, mutation testing, perf testing, Testcontainers, WireMock |
 
 Because `expectedKeywords` drives *keyword-recall* substring matching, every keyword is a literal
 term pulled from the source note (a config key, annotation name, CLI flag, specific number) — not
@@ -304,8 +317,9 @@ match, not tokenized or semantic):
   this, but the judge itself is an LLM call and isn't infallible either.
 - **No historical trend tracking** — each run overwrites `eval-report.md`; commit it (or
   timestamp report filenames) to get a trend rather than a single snapshot.
-- **Dataset extraction from `learning-*.md` is incremental** — topics land as separate files under
-  `golden-dataset/` as they're mined; see [§5](#the-golden-dataset) for what's landed so far.
+- **Coverage tracks the source notes, not a fixed spec** — if a `learning-*.md` topic is added or
+  rewritten later, its `golden-dataset/*.json` counterpart needs a corresponding refresh to stay
+  grounded in current content.
 
 ---
 
