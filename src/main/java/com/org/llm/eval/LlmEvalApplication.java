@@ -1,29 +1,23 @@
 package com.org.llm.eval;
 
+import com.org.llm.eval.controller.EvalController;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 /**
- * CLI evaluation harness: runs the golden dataset against every configured retrieval system
- * (vector RAG pipeline, vectorless RAG, graph RAG, OKF) and writes a markdown comparison report.
+ * REST API for evaluating configured systems (local Ollama models, RAG pipelines, etc) one
+ * question at a time. See {@link EvalController} for the endpoints — the caller drives the golden
+ * dataset (in {@code golden-dataset/} at the project root) question-by-question and does its own
+ * verification.
  *
- * <p>Usage: start the target systems, then {@code mvn spring-boot:run}. Systems that are down are
- * reported as unavailable rather than failing the whole evaluation.
+ * <p>Usage: {@code mvn spring-boot:run}, then POST questions to {@code /api/ask}.
  */
 @SpringBootApplication
 @ConfigurationPropertiesScan
 class LlmEvalApplication {
 
-    /**
-     * Application entry point.
-     */
     static void main(String[] args) {
-        new SpringApplication(LlmEvalApplication.class) {
-            {
-                setWebApplicationType(WebApplicationType.NONE);
-            }
-        }.run(args);
+        SpringApplication.run(LlmEvalApplication.class, args);
     }
 }

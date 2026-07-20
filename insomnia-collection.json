@@ -1,0 +1,169 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-20T04:33:41.000Z",
+  "__export_source": "insomnia.desktop.app:v8",
+  "resources": [
+    {
+      "_id": "wrk_llmeval001",
+      "_type": "workspace",
+      "parentId": null,
+      "modified": 1784522021508,
+      "created": 1784522021508,
+      "name": "llm-eval",
+      "description": "REST API for evaluating local Ollama models against a golden question dataset, plus LLM-as-judge scoring.",
+      "scope": "collection"
+    },
+    {
+      "_id": "env_llmeval001",
+      "_type": "environment",
+      "parentId": "wrk_llmeval001",
+      "modified": 1784522021508,
+      "created": 1784522021508,
+      "name": "Base Environment",
+      "data": {},
+      "dataPropertyOrder": {},
+      "color": null,
+      "isPrivate": false
+    },
+    {
+      "_id": "env_llmeval002",
+      "_type": "environment",
+      "parentId": "env_llmeval001",
+      "modified": 1784522021508,
+      "created": 1784522021508,
+      "name": "Local",
+      "data": {
+        "base_url": "http://localhost:8080",
+        "system": "bonsai:27b",
+        "judge": "qwen3.6:27b"
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "system",
+          "judge"
+        ]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1784522021508
+    },
+    {
+      "_id": "fld_llmeval001",
+      "_type": "request_group",
+      "parentId": "wrk_llmeval001",
+      "modified": 1784522021508,
+      "created": 1784522021508,
+      "name": "eval",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1784522021508
+    },
+    {
+      "_id": "req_llmeval001",
+      "_type": "request",
+      "parentId": "fld_llmeval001",
+      "modified": 1784522021508,
+      "created": 1784522021508,
+      "url": "{{ _.base_url }}/api/systems",
+      "name": "List systems",
+      "description": "Configured systems-under-test (from eval.systems), by name.",
+      "method": "GET",
+      "headers": [],
+      "parameters": [],
+      "body": {},
+      "metaSortKey": -1784522021508,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+    {
+      "_id": "req_llmeval002",
+      "_type": "request",
+      "parentId": "fld_llmeval001",
+      "modified": 1784522021508,
+      "created": 1784522021508,
+      "url": "{{ _.base_url }}/api/ask",
+      "name": "Ask",
+      "description": "Ask one configured system a question. `accuracy` is deterministic keyword recall, not a full verdict.",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"system\": \"{{ _.system }}\",\n  \"question\": \"What is the capital of France?\",\n  \"expectedKeywords\": [\n    \"Paris\"\n  ]\n}"
+      },
+      "metaSortKey": -1784522021507,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+    {
+      "_id": "req_llmeval003",
+      "_type": "request",
+      "parentId": "fld_llmeval001",
+      "modified": 1784522021508,
+      "created": 1784522021508,
+      "url": "{{ _.base_url }}/api/ask-judge",
+      "name": "Ask + LLM Judge",
+      "description": "Ask a system, then grade the answer with a separate judge model (eval.judges). `judge` field is optional \u2014 omit to use the default eval.judge-system. Returns {ask: AskResult, judge: JudgeResult} where JudgeResult has score (0-1), verdict (correct/partial/incorrect), and reasoning.",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"system\": \"{{ _.system }}\",\n  \"question\": \"What is the capital of France?\",\n  \"expectedKeywords\": [\n    \"Paris\"\n  ],\n  \"referenceAnswer\": \"Paris is the capital of France.\",\n  \"judge\": \"{{ _.judge }}\"\n}"
+      },
+      "metaSortKey": -1784522021506,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+    {
+      "_id": "req_llmeval004",
+      "_type": "request",
+      "parentId": "fld_llmeval001",
+      "modified": 1784522021508,
+      "created": 1784522021508,
+      "url": "{{ _.base_url }}/api/unload/{{ _.system }}",
+      "name": "Unload model",
+      "description": "Evicts the model from Ollama (keep_alive: 0). Call before switching to the next model.",
+      "method": "POST",
+      "headers": [],
+      "parameters": [],
+      "body": {},
+      "metaSortKey": -1784522021505,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    }
+  ]
+}

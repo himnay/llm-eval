@@ -2,10 +2,12 @@
 
 <img src="image/spring-logo.png" alt="logo" width="80"/>
 
-`llm-eval` is a Spring Boot CLI application with one job: ask the same set of questions to every
-LLM you've downloaded and run locally (Ollama), score the answers two independent ways, and
-produce a markdown report that says — objectively, repeatably, and without a human re-reading a
-dozen chat transcripts — which local model is actually best at which kind of question.
+`llm-eval` is a small Spring Boot REST API with one job: given a system name and a question, ask
+the matching local model (Ollama) and hand back its answer plus a keyword-recall score. There's no
+internal batch loop or LLM-as-judge call anymore — the golden dataset lives on disk at
+`golden-dataset/`, and something external (typically Claude Code, following `CLAUDE.md`) reads it,
+drives `/api/ask` question-by-question in order, does the actual correctness verification, and
+writes `eval-report.md` incrementally as it goes.
 
 The golden dataset isn't generic trivia. It's mined from this author's own `learning-*.md` study
 notes (Java, Spring, Kafka, Kubernetes, databases, security, system design, ...), so "does this
@@ -48,45 +50,44 @@ under test, and one report that ranks them.
 
 <a id="the-two-scoring-strategies"></a>
 
-## 2. 🔹 The two scoring strategies
+## 2. 🔹 Scoring: keyword recall + external verification
 
-Every answer is scored two ways, deliberately kept independent so one can sanity-check the other:
+`POST /api/ask` scores every answer one deterministic way — **keyword recall** (`AnswerScorer`):
+the fraction of `expectedKeywords` found as case-insensitive substrings of the answer. Free,
+instant, and returned inline in the response. Its ceiling is real: it cannot detect fluent nonsense
+that happens to mention the right nouns (a hallucinated answer can still score high).
 
-| Scorer | How it works | Cost | Nuance |
-|---|---|---|---|
-| **Keyword recall** (`AnswerScorer`) | Fraction of `expectedKeywords` found as case-insensitive substrings of the answer | Free, instant, deterministic | Cannot detect fluent nonsense that happens to mention the right nouns |
-| **LLM-as-judge** (`JudgeScorer`) | Sends the question, the expected facts, and the candidate answer to Claude (`claude-opus-4-8` by default) and asks for a 0.0–1.0 correctness/completeness score | One Anthropic API call per (model, question) pair | Tolerates paraphrase, penalizes confidently-wrong answers, gives partial credit |
-
-Keyword recall is the floor — cheap enough to run on every question, every time. The judge is the
-ceiling — it catches the cases keyword matching structurally can't (a correct answer phrased with a
-synonym the keyword list didn't anticipate, or a wrong answer that happens to name the right term in
-passing). Both scores land in the same report so a keyword-recall dip that isn't mirrored by a
-judge-score dip is a useful signal in itself: the model was probably still right.
-
-Set `eval.judge-enabled: false` to skip the judge and get a free, instant, CI-safe run.
+That ceiling is deliberately not patched inside the app with another API call. Instead, whoever
+drives the dataset through `/api/ask` — normally Claude Code, per `CLAUDE.md` — reads each answer
+and judges correctness itself, using `accuracy` as a rough first signal rather than the verdict.
+There used to be an in-process Anthropic-backed `JudgeScorer` doing this per-question; it's gone —
+the external caller *is* the judge now, which also means no `ANTHROPIC_API_KEY` is needed to run
+an eval at all.
 
 ---
 
 <a id="architecture-how-evalrunner-orchestrates-a-run"></a>
 
-## 3. 🔀 Architecture: how `EvalRunner` orchestrates a run
+## 3. 🔀 Architecture: a stateless REST surface, no batch loop
 
-`EvalRunner` (`src/main/java/com/org/llm/eval/EvalRunner.java`) is a Spring `CommandLineRunner` —
-the app boots with `WebApplicationType.NONE` (see `LlmEvalApplication`). It's a batch job, not a
-service: run it, it runs to completion, it writes a file, it exits.
+The app boots as a normal Spring MVC web service (`LlmEvalApplication`, default
+`WebApplicationType`) and stays up on `http://localhost:8080` — it does nothing on its own until
+asked. Two classes do all the work:
 
-`run(...)` does five things, in order:
+- **`EvalController`** (`src/main/java/com/org/llm/eval/EvalController.java`) — the REST surface:
+  - `GET /api/systems` — configured model names.
+  - `POST /api/ask` — `{system, question, expectedKeywords}` → `{system, answer, accuracy,
+    latencyMs, error}`.
+  - `POST /api/unload/{system}` — evicts that model from Ollama.
+- **`EvalRunner`** (`@Service`, not `CommandLineRunner`) — does the actual work per call: builds
+  the request body from `extraRequestFields` + `{questionField: question}`, POSTs to the system's
+  `url`, extracts the answer at `answerField`, and (if `expectedKeywords` was supplied) scores it
+  with `AnswerScorer`.
 
-1. **Load the golden dataset** — every `*.json` file under `golden-dataset/` on the classpath is
-   deserialized and concatenated into one `List<GoldenQuestion>` (see [§5](#the-golden-dataset)).
-2. **Build the judge** (if `eval.judge-enabled`) — a single `AnthropicClient` via
-   `AnthropicOkHttpClient.fromEnv()`, so credentials resolve the same way the `ant` CLI does
-   (`ANTHROPIC_API_KEY`, then an `ant auth login` profile).
-3. **Evaluate the full cross-product** — for every configured local model, for every golden
-   question, POST to the model's endpoint and score the answer both ways.
-4. **Render a markdown report** — a summary table (one row per model) plus a per-question keyword
-   accuracy matrix.
-5. **Write the report to disk** at `eval.report-path` (`eval-report.md` by default).
+There's no dataset loading, no cross-product loop, and no report rendering inside the app —
+`/api/ask` handles exactly one (system, question) pair per call and returns immediately. Iterating
+every category/question/model combination, and writing `eval-report.md`, is the caller's job (see
+[§7](#running-it) and `CLAUDE.md`).
 
 ### The generic REST adapter — same shape for every local model
 
@@ -108,16 +109,16 @@ reads the answer back out of the response at `answerField` via Jackson's `JsonNo
 navigation. Every Ollama model hits the same `/api/generate` endpoint — only `extra-request-fields.model`
 differs — so **swapping or adding a locally-downloaded model is a YAML edit, never a Java change**.
 
-### Per-question result shape
+### Per-call result shape
 
 ```java
-record Result(String system, String questionId, double accuracy, Double judgeScore,
-              long latencyMs, int answerChars, String error) {}
+public record AskResult(String system, String answer, Double accuracy, long latencyMs, String error) {}
 ```
 
-`judgeScore` is `null` when the judge is disabled or a judge call itself failed (network/API
-error) — that failure never drops the keyword-recall score for the same question, and never
-aborts the run.
+`accuracy` is `null` when the caller doesn't pass `expectedKeywords` (skips scoring entirely). A
+failed call (unreachable model, timeout, malformed response) never throws out of the controller —
+it comes back as a normal `200` response with `answer: null` and `error` populated, so a caller
+looping over many questions can just check `error` per response instead of catching exceptions.
 
 ---
 
@@ -130,12 +131,8 @@ Bound from `application.yaml` under `eval.*` via `@ConfigurationProperties` +
 
 | Property | Meaning | Default |
 |---|---|---|
-| `eval.dataset-path` | Classpath glob for golden-question files | `classpath:golden-dataset/*.json` |
-| `eval.report-path` | Where the markdown report is written | `${EVAL_REPORT_PATH:eval-report.md}` |
 | `eval.request-timeout-seconds` | Per-call HTTP read timeout (local models can be slow to first-token) | `${EVAL_REQUEST_TIMEOUT_SECONDS:120}` |
-| `eval.judge-enabled` | Turn the LLM-as-judge scorer on/off | `${EVAL_JUDGE_ENABLED:true}` |
-| `eval.judge-model` | Claude model used as judge | `${EVAL_JUDGE_MODEL:claude-opus-4-8}` |
-| `eval.systems[].name` | Display name in report tables | — |
+| `eval.systems[].name` | Name passed as `system` in `/api/ask` requests | — |
 | `eval.systems[].url` | Full endpoint URL | — |
 | `eval.systems[].question-field` / `answer-field` | Request/response JSON field names | — |
 | `eval.systems[].extra-request-fields` | Fixed fields merged into every request body (e.g. Ollama's `model`, `stream`) | none |
@@ -147,13 +144,16 @@ Bound from `application.yaml` under `eval.*` via `@ConfigurationProperties` +
 
 ## 5. 🔹 The golden dataset
 
-`src/main/resources/golden-dataset/` holds one JSON file per topic instead of one monolithic file,
-so each topic can be curated, reviewed, and regenerated independently. Every file is a flat array
-of:
+`golden-dataset/` at the project root (not on the classpath — the app never reads it) holds one
+JSON file per topic instead of one monolithic file, so each topic can be curated, reviewed, and
+regenerated independently. Every file is a flat array of:
 
-```java
-public record GoldenQuestion(String id, String question, List<String> expectedKeywords) {}
+```json
+{"id": "db-001", "question": "...", "expectedKeywords": ["...", "..."]}
 ```
+
+Whoever drives an eval reads these files directly off disk and passes `question` +
+`expectedKeywords` straight through to `/api/ask` — there's no Java-side dataset model anymore.
 
 Topics are mined directly from this author's `learning-*.md` notes (a separate `learning` repo) —
 one or a few source files per JSON output, `id` prefixed per topic (`db-001`, `k8s-001`,
@@ -192,8 +192,8 @@ avoided by picking specific-enough keywords per [Extending the dataset](#extendi
 `llm-eval` inherits `com.org.llm:super-pom` (this workspace's corporate parent — Spring Boot
 parent, enforcer rules, Jacoco/Spotless/PITest plugin management, the `security-scan` and
 `mutation-test` profiles), which in turn imports `com.org.learning:learning-bom` — the single
-source of truth for every managed dependency version, including `com.anthropic:anthropic-java`
-(the SDK `JudgeScorer` uses). Adding or bumping a dependency version happens in the BOM, not here.
+source of truth for every managed dependency version. Adding or bumping a dependency version
+happens in the BOM, not here.
 
 ```xml
 <parent>
@@ -209,32 +209,48 @@ source of truth for every managed dependency version, including `com.anthropic:a
 
 ## 7. 🚀 Running it
 
+**1. Make sure the local models you want to test are pulled and Ollama is running:**
+
 ```bash
-# 1. make sure the local models you want to compare are pulled and Ollama is running
 ollama list
 ollama serve   # if not already running as a service
-
-# 2. resolve Anthropic credentials for the judge (skip if eval.judge-enabled: false)
-ant auth login          # or: export ANTHROPIC_API_KEY=...
-
-# 3. run the eval
-./mvnw spring-boot:run
-
-# override anything via environment variables:
-OLLAMA_URL=http://localhost:11434 \
-EVAL_JUDGE_ENABLED=true \
-EVAL_JUDGE_MODEL=claude-opus-4-8 \
-EVAL_REPORT_PATH=/tmp/report.md \
-EVAL_REQUEST_TIMEOUT_SECONDS=120 \
-./mvnw spring-boot:run
 ```
 
-The app is a one-shot CLI run (`WebApplicationType.NONE`) — it loads the dataset, evaluates every
-configured model, writes the report, logs where it landed, and exits. A model that's unreachable
-or too slow scores 0 and is marked `unavailable`; the run itself never aborts because of it.
+**2. Start the app.** Do this yourself (IntelliJ run configuration, so you get live logs, or
+`mvn spring-boot:run` from a terminal) — if you're asking Claude Code to run an eval, it will
+*not* start the app itself; it checks `GET /api/systems` and waits for you to start it (see
+`CLAUDE.md`). No `ANTHROPIC_API_KEY` or any credential is needed — nothing in this app calls out
+to Anthropic anymore.
 
 ```bash
-./mvnw test   # AnswerScorer + percentile() unit tests, no network calls
+mvn spring-boot:run
+# override the per-call timeout if needed:
+EVAL_REQUEST_TIMEOUT_SECONDS=180 mvn spring-boot:run
+```
+
+**3. Drive an eval.** The easiest way is to just ask Claude Code — it reads `CLAUDE.md`, iterates
+`golden-dataset/*.json` category by category, calls `/api/ask` per question, verifies each answer
+itself, and appends results to `eval-report.md`. To do it by hand instead:
+
+```bash
+# what models are configured?
+curl http://localhost:8080/api/systems
+
+# ask one question
+curl -X POST http://localhost:8080/api/ask \
+  -H "Content-Type: application/json" \
+  -d '{"system":"qwen3:4b","question":"What is dependency injection?","expectedKeywords":["ioc","container"]}'
+
+# done with a model? free it from Ollama's VRAM/RAM before moving to the next one
+curl -X POST http://localhost:8080/api/unload/qwen3:4b
+```
+
+A model that's unreachable, too slow, or errors comes back as a normal `200` with `error`
+populated rather than throwing — a caller looping over many questions doesn't need to handle
+exceptions, just check that field per response.
+
+```bash
+mvn test   # AnswerScorer unit tests, no network calls
 ```
 
 ---
@@ -266,8 +282,8 @@ cross-product and the comparison table.
 
 ## 9. 🔹 Extending the dataset
 
-Add a new file under `src/main/resources/golden-dataset/` (any filename — all `*.json` files are
-loaded and merged) or append to an existing one:
+Add a new file under `golden-dataset/` at the project root (any filename) or append to an existing
+one:
 
 ```json
 {
@@ -292,15 +308,13 @@ match, not tokenized or semantic):
 
 ## 10. 🛡️ Failure handling and resilience
 
-- **Per-question try/catch, not per-run.** One model's connection refusal, timeout, or malformed
-  response degrades to one `Result` row with `accuracy = 0` and a populated `error` — it can never
-  abort the outer double loop.
+- **Per-call try/catch, not per-run.** A model's connection refusal, timeout, or malformed
+  response degrades to a normal `200` response with `answer: null` and `error` populated — it
+  never throws out of `/api/ask`, so a caller looping over many questions never has to catch
+  exceptions mid-run.
 - **Bounded timeouts on every call** — a 5s connect timeout and configurable (default 120s,
   generous for a cold local model still loading into VRAM) read timeout via
   `JdkClientHttpRequestFactory`.
-- **Judge failures never take down keyword scoring.** A judge-call exception is caught
-  independently per question; `judgeScore` is left `null` and the keyword-recall score for that
-  question is still recorded.
 - **Defensive JSON field extraction** — a missing `answer-field` degrades to `""` (scored `0`),
   never a `NullPointerException`.
 
@@ -310,13 +324,13 @@ match, not tokenized or semantic):
 
 ## 11. 🔹 Known limitations
 
-- **Sequential execution** — models and questions are evaluated in a nested loop with no
-  concurrency; total wall-clock time scales with `models × questions × per-call latency`
-  (dominated by local-model inference and, if enabled, judge round trips).
-- **Keyword recall has a hard ceiling on nuance** — the judge score exists specifically to cover
-  this, but the judge itself is an LLM call and isn't infallible either.
-- **No historical trend tracking** — each run overwrites `eval-report.md`; commit it (or
-  timestamp report filenames) to get a trend rather than a single snapshot.
+- **Sequential by construction** — `/api/ask` handles one question at a time; total wall-clock
+  time for a full run scales with `models × questions × per-call latency`, dominated by
+  local-model inference (CPU-only inference, or a thinking-capable model's hidden reasoning pass,
+  can easily push a single answer past a minute).
+- **Keyword recall has a hard ceiling on nuance** — it cannot detect fluent nonsense that happens
+  to mention the right nouns. There's no in-process judge anymore to cover this; it relies on
+  whoever calls `/api/ask` (typically Claude Code) reading the answer and judging it.
 - **Coverage tracks the source notes, not a fixed spec** — if a `learning-*.md` topic is added or
   rewritten later, its `golden-dataset/*.json` counterpart needs a corresponding refresh to stay
   grounded in current content.
@@ -329,21 +343,20 @@ match, not tokenized or semantic):
 
 ```
 src/main/java/com/org/llm/eval/
-  LlmEvalApplication.java   Boot entry point; WebApplicationType.NONE; @ConfigurationPropertiesScan
-  EvalRunner.java           CommandLineRunner: orchestrates the eval loop, scores, renders + writes the report
-  EvalProperties.java       @ConfigurationProperties(prefix = "eval") — systems, dataset glob, judge config
-  GoldenQuestion.java       record(id, question, expectedKeywords) — one dataset entry
+  LlmEvalApplication.java   Boot entry point; @ConfigurationPropertiesScan
+  EvalController.java       REST surface: GET /api/systems, POST /api/ask, POST /api/unload/{system}
+  EvalRunner.java           @Service — one call to one system's model endpoint, scores if asked
+  EvalProperties.java       @ConfigurationProperties(prefix = "eval") — systems + request timeout
   AnswerScorer.java         Pure static keyword-recall scorer
-  JudgeScorer.java          LLM-as-judge scorer (Anthropic API, claude-opus-4-8 by default)
 
 src/main/resources/
-  application.yaml          Local-model list (Ollama), dataset glob, judge config, report path
-  golden-dataset/           One versioned *.json file per topic — the rubric, mined from learning-*.md
+  application.yaml          Local-model list (Ollama) + request timeout
   banner.txt                Spring Boot startup banner
 
 src/test/java/com/org/llm/eval/
   AnswerScorerTest.java     Pins down every keyword-recall scoring rule
-  EvalRunnerTest.java       Pins down percentile() edge cases
 
-eval-report.md              Most recent run's output (checked in as a worked example)
+golden-dataset/              One versioned *.json file per topic — the rubric, mined from learning-*.md
+CLAUDE.md                    Step-by-step eval-driving instructions for Claude Code
+eval-report.md                Accumulated eval history — appended to, per run, never overwritten
 ```

@@ -1,0 +1,1106 @@
+[
+  {
+    "id": "java-001",
+    "question": "Who produces the Zulu OpenJDK distribution, and is it a TCK-passing build?",
+    "expectedKeywords": [
+      "azul",
+      "zulu",
+      "openjdk"
+    ]
+  },
+  {
+    "id": "java-002",
+    "question": "What is Zulu Prime (formerly called Zing), and what special garbage collector does it use for very large heaps?",
+    "expectedKeywords": [
+      "zulu prime",
+      "zing",
+      "c4"
+    ]
+  },
+  {
+    "id": "java-003",
+    "question": "What does the SDKMAN CLI tool help Java developers manage across languages and build tools?",
+    "expectedKeywords": [
+      "sdkman",
+      "software development kit"
+    ]
+  },
+  {
+    "id": "java-004",
+    "question": "Which HTTP methods does Java's built-in jwebserver (Simple Web Server, introduced in Java 18) support?",
+    "expectedKeywords": [
+      "jwebserver",
+      "get and head"
+    ]
+  },
+  {
+    "id": "java-005",
+    "question": "Does Java's jwebserver support HTTPS connections?",
+    "expectedKeywords": [
+      "jwebserver",
+      "https"
+    ]
+  },
+  {
+    "id": "java-006",
+    "question": "In which Java package does the HTTP Client introduced in Java 11 live, and which two protocols does it support?",
+    "expectedKeywords": [
+      "java.net.http",
+      "http/2",
+      "websocket"
+    ]
+  },
+  {
+    "id": "java-007",
+    "question": "What file must you create to declare a Java module under JPMS, and what keyword lets one module use another module's exported package?",
+    "expectedKeywords": [
+      "module-info.java",
+      "requires"
+    ]
+  },
+  {
+    "id": "java-008",
+    "question": "What JEP introduced local variable type inference (the 'var' keyword), and in which Java version was it released?",
+    "expectedKeywords": [
+      "jep 286",
+      "java 10"
+    ]
+  },
+  {
+    "id": "java-009",
+    "question": "Name two places where Java's 'var' keyword is forbidden, such as class members or method parameters.",
+    "expectedKeywords": [
+      "class properties",
+      "function argument"
+    ]
+  },
+  {
+    "id": "java-010",
+    "question": "What Java version introduced text blocks for multi-line string literals?",
+    "expectedKeywords": [
+      "java 15",
+      "text block"
+    ]
+  },
+  {
+    "id": "java-011",
+    "question": "In Java 14's enhanced switch expressions, what keyword do you use to return a value from a multi-statement block case?",
+    "expectedKeywords": [
+      "yield",
+      "switch expression"
+    ]
+  },
+  {
+    "id": "java-012",
+    "question": "Besides a canonical constructor, what does the compiler automatically generate for a Java record?",
+    "expectedKeywords": [
+      "accessors",
+      "hashcode",
+      "tostring"
+    ]
+  },
+  {
+    "id": "java-013",
+    "question": "What is the only class that a Java record is allowed to extend?",
+    "expectedKeywords": [
+      "java.lang.record",
+      "inheritance"
+    ]
+  },
+  {
+    "id": "java-014",
+    "question": "What three keywords does Java 17 use to control which classes may extend a sealed class?",
+    "expectedKeywords": [
+      "sealed",
+      "non-sealed",
+      "permits"
+    ]
+  },
+  {
+    "id": "java-015",
+    "question": "What are the two named categories of pattern matching described for checking a type, casting it, and binding a variable?",
+    "expectedKeywords": [
+      "record pattern",
+      "guard pattern"
+    ]
+  },
+  {
+    "id": "java-016",
+    "question": "What are the three core interfaces introduced by Java 21's Sequenced Collections feature?",
+    "expectedKeywords": [
+      "sequencedcollection",
+      "sequencedset",
+      "sequencedmap"
+    ]
+  },
+  {
+    "id": "java-017",
+    "question": "Is CompletableFuture considered task-based or data-based parallelism, and what about parallelStream()?",
+    "expectedKeywords": [
+      "task-based parallelism",
+      "data-based parallelism"
+    ]
+  },
+  {
+    "id": "java-018",
+    "question": "Which Executors factory method creates threads on demand and kills idle threads after 60 seconds of inactivity?",
+    "expectedKeywords": [
+      "newcachedthreadpool",
+      "kills threads idle"
+    ]
+  },
+  {
+    "id": "java-019",
+    "question": "Which Executors factory method is designed for delayed or periodic tasks, and what two methods do you call on it to schedule them?",
+    "expectedKeywords": [
+      "newscheduledthreadpool",
+      "schedule",
+      "scheduleatfixedrate"
+    ]
+  },
+  {
+    "id": "java-020",
+    "question": "Which Executors factory method is backed by ForkJoinPool and lets idle worker threads steal tasks from busy ones?",
+    "expectedKeywords": [
+      "newworkstealingpool",
+      "forkjoinpool"
+    ]
+  },
+  {
+    "id": "java-021",
+    "question": "Which Java 21+ Executors factory method spins up a new lightweight virtual thread for every submitted task?",
+    "expectedKeywords": [
+      "newvirtualthreadpertaskexecutor",
+      "virtual thread"
+    ]
+  },
+  {
+    "id": "java-022",
+    "question": "What is the general-purpose class that most of the Executors.newXxx() factory methods are thin wrappers around?",
+    "expectedKeywords": [
+      "threadpoolexecutor",
+      "rejection policy"
+    ]
+  },
+  {
+    "id": "java-023",
+    "question": "What is Spring's default executor for a method annotated with @Async, if no custom TaskExecutor bean is registered?",
+    "expectedKeywords": [
+      "simpleasynctaskexecutor",
+      "@async"
+    ]
+  },
+  {
+    "id": "java-024",
+    "question": "What three components make up an ExecutorService's internal architecture?",
+    "expectedKeywords": [
+      "threadpool",
+      "workqueue",
+      "completionqueue"
+    ]
+  },
+  {
+    "id": "java-025",
+    "question": "Name two drawbacks of using ExecutorService mentioned in the notes.",
+    "expectedKeywords": [
+      "blocking",
+      "difficult to join"
+    ]
+  },
+  {
+    "id": "java-026",
+    "question": "What can you do with the Future object returned by ExecutorService.submit(Callable) that you can't do with execute(Runnable)?",
+    "expectedKeywords": [
+      "future",
+      "cancel"
+    ]
+  },
+  {
+    "id": "java-027",
+    "question": "What scheduling strategy does ForkJoinPool use to balance workload among its worker threads, and where do idle threads look for work?",
+    "expectedKeywords": [
+      "work-stealing",
+      "deque"
+    ]
+  },
+  {
+    "id": "java-028",
+    "question": "What are the three steps that a parallel stream follows internally, based on the fork/join framework?",
+    "expectedKeywords": [
+      "split",
+      "execute",
+      "combine"
+    ]
+  },
+  {
+    "id": "java-029",
+    "question": "What shared, JVM-wide thread pool is used internally both by parallel streams and by CompletableFuture's async methods?",
+    "expectedKeywords": [
+      "commonpool()",
+      "forkjoinpool"
+    ]
+  },
+  {
+    "id": "java-030",
+    "question": "By default, what is the parallelism level of the common ForkJoinPool relative to the number of available processors?",
+    "expectedKeywords": [
+      "minus one",
+      "availableprocessors"
+    ]
+  },
+  {
+    "id": "java-031",
+    "question": "What system property can you set to override the default parallelism level of the common ForkJoinPool?",
+    "expectedKeywords": [
+      "java.util.concurrent.forkjoinpool.common.parallelism",
+      "setproperty"
+    ]
+  },
+  {
+    "id": "java-032",
+    "question": "Does CompletableFuture.join() throw a checked or unchecked exception, and what is its exception type?",
+    "expectedKeywords": [
+      "completionexception",
+      "unchecked"
+    ]
+  },
+  {
+    "id": "java-033",
+    "question": "What two checked exceptions can CompletableFuture.get() throw?",
+    "expectedKeywords": [
+      "interruptedexception",
+      "executionexception"
+    ]
+  },
+  {
+    "id": "java-034",
+    "question": "What exception does CompletableFuture.get(5, TimeUnit.SECONDS) throw if the timeout elapses?",
+    "expectedKeywords": [
+      "timeoutexception",
+      "timeunit"
+    ]
+  },
+  {
+    "id": "java-035",
+    "question": "What does CompletableFuture's getNow(valueIfAbsent) method do if the future hasn't completed yet?",
+    "expectedKeywords": [
+      "getnow",
+      "valueifabsent"
+    ]
+  },
+  {
+    "id": "java-036",
+    "question": "What two methods let you manually complete a CompletableFuture, one normally and one with an exception?",
+    "expectedKeywords": [
+      "complete",
+      "completeexceptionally"
+    ]
+  },
+  {
+    "id": "java-037",
+    "question": "What is the difference between CompletableFuture.runAsync() and supplyAsync() in terms of return type?",
+    "expectedKeywords": [
+      "runasync",
+      "supplyasync",
+      "void"
+    ]
+  },
+  {
+    "id": "java-038",
+    "question": "What is the difference between thenApply() and thenApplyAsync() in a CompletableFuture chain, regarding which thread runs the callback?",
+    "expectedKeywords": [
+      "thenapply",
+      "thenapplyasync"
+    ]
+  },
+  {
+    "id": "java-039",
+    "question": "Which two CompletableFuture callback methods let you run code after completion without returning a value?",
+    "expectedKeywords": [
+      "thenaccept",
+      "thenrun"
+    ]
+  },
+  {
+    "id": "java-040",
+    "question": "What is the difference between CompletableFuture.allOf() and anyOf()?",
+    "expectedKeywords": [
+      "allof",
+      "anyof"
+    ]
+  },
+  {
+    "id": "java-041",
+    "question": "What is the difference between thenCompose() and thenCombine() in CompletableFuture?",
+    "expectedKeywords": [
+      "thencompose",
+      "thencombine"
+    ]
+  },
+  {
+    "id": "java-042",
+    "question": "What are the three CompletableFuture methods for handling exceptions, and which one is invoked even when there's no exception?",
+    "expectedKeywords": [
+      "handle",
+      "exceptionally",
+      "whencomplete"
+    ]
+  },
+  {
+    "id": "java-043",
+    "question": "How do you create a custom ForkJoinPool with 4 threads for use with a CompletableFuture task?",
+    "expectedKeywords": [
+      "forkjoinpool(4)",
+      "supplyasync"
+    ]
+  },
+  {
+    "id": "java-044",
+    "question": "What method call returns the number of available processor cores in Java?",
+    "expectedKeywords": [
+      "runtime.getruntime()",
+      "availableprocessors"
+    ]
+  },
+  {
+    "id": "java-045",
+    "question": "Why is it dangerous to call add() on a plain ArrayList from inside a parallelStream() operation?",
+    "expectedKeywords": [
+      "arrayindexoutofboundsexception",
+      "parallelstream"
+    ]
+  },
+  {
+    "id": "java-046",
+    "question": "As of Java 26, is StructuredTaskScope finalized or still in preview, and which JEP number covers it?",
+    "expectedKeywords": [
+      "jep 525",
+      "preview"
+    ]
+  },
+  {
+    "id": "java-047",
+    "question": "What are the four access modifiers used for encapsulation in Java?",
+    "expectedKeywords": [
+      "public",
+      "private",
+      "protected",
+      "default"
+    ]
+  },
+  {
+    "id": "java-048",
+    "question": "Which type of polymorphism is method overloading, and which is method overriding — compile-time or runtime?",
+    "expectedKeywords": [
+      "compile-time polymorphism",
+      "runtime polymorphism"
+    ]
+  },
+  {
+    "id": "java-049",
+    "question": "What runtime exception is thrown if a traditional Java collection is structurally modified while it's being iterated?",
+    "expectedKeywords": [
+      "concurrentmodificationexception",
+      "iterating"
+    ]
+  },
+  {
+    "id": "java-050",
+    "question": "Name three Collections utility methods used to obtain a synchronized wrapper around a non-synchronized collection.",
+    "expectedKeywords": [
+      "synchronizedlist",
+      "synchronizedmap",
+      "synchronizedset"
+    ]
+  },
+  {
+    "id": "java-051",
+    "question": "In which Java version and package was ConcurrentHashMap introduced?",
+    "expectedKeywords": [
+      "java 5",
+      "java.util.concurrent"
+    ]
+  },
+  {
+    "id": "java-052",
+    "question": "Since Java 8, how does ConcurrentHashMap achieve fine-grained locking instead of the old segment-based locking?",
+    "expectedKeywords": [
+      "synchronized",
+      "cas operations"
+    ]
+  },
+  {
+    "id": "java-053",
+    "question": "What is an anonymous class in Java, and why can't you use it to create named instances?",
+    "expectedKeywords": [
+      "anonymous class",
+      "no name"
+    ]
+  },
+  {
+    "id": "java-054",
+    "question": "What method does the Comparable interface define, and what does Comparator's compare() method return when the first argument is less than the second?",
+    "expectedKeywords": [
+      "compareto",
+      "negative integer"
+    ]
+  },
+  {
+    "id": "java-055",
+    "question": "What does Optional's orElseGet() do differently from orElse() regarding when the given function is called?",
+    "expectedKeywords": [
+      "orelseget",
+      "orelse",
+      "ispresent"
+    ]
+  },
+  {
+    "id": "java-056",
+    "question": "Which Optional method would you use to flatten and access a property on an Optional value nested inside another Optional?",
+    "expectedKeywords": [
+      "flatmap",
+      "optional"
+    ]
+  },
+  {
+    "id": "java-057",
+    "question": "In the Java Stream API, what's the difference between an intermediate operation and a terminal operation in terms of return type?",
+    "expectedKeywords": [
+      "intermediate operation",
+      "terminal operation"
+    ]
+  },
+  {
+    "id": "java-058",
+    "question": "What are the three phases that make up a Java stream pipeline?",
+    "expectedKeywords": [
+      "split",
+      "apply",
+      "combine"
+    ]
+  },
+  {
+    "id": "java-059",
+    "question": "Which Java class is used under the hood to split a collection's data into chunks for a parallel stream?",
+    "expectedKeywords": [
+      "spliterator",
+      "parallel"
+    ]
+  },
+  {
+    "id": "java-060",
+    "question": "Name three stateful stream operations that should be avoided in a parallel stream because they hurt performance.",
+    "expectedKeywords": [
+      "sorted",
+      "distinct",
+      "limit"
+    ]
+  },
+  {
+    "id": "java-061",
+    "question": "In Stream.reduce(identity, accumulator), what does the 'identity' argument represent?",
+    "expectedKeywords": [
+      "identity",
+      "accumulator"
+    ]
+  },
+  {
+    "id": "java-062",
+    "question": "Why can't a local variable be reassigned inside the body of a lambda expression that captures it?",
+    "expectedKeywords": [
+      "effectively final",
+      "local variable"
+    ]
+  },
+  {
+    "id": "java-063",
+    "question": "What does SAM stand for in the context of Java functional interfaces?",
+    "expectedKeywords": [
+      "single abstract method"
+    ]
+  },
+  {
+    "id": "java-064",
+    "question": "What method does the Runnable functional interface declare, and what method does Callable declare?",
+    "expectedKeywords": [
+      "run()",
+      "call()"
+    ]
+  },
+  {
+    "id": "java-065",
+    "question": "What is the difference between UnaryOperator and BinaryOperator in java.util.function?",
+    "expectedKeywords": [
+      "unaryoperator",
+      "binaryoperator"
+    ]
+  },
+  {
+    "id": "java-066",
+    "question": "What is the syntax for a Java constructor method reference, and what is an example of an instance method reference?",
+    "expectedKeywords": [
+      "classname::new",
+      "instance::methodname"
+    ]
+  },
+  {
+    "id": "java-067",
+    "question": "Why aren't instance variables allowed inside default or static methods of a Java interface?",
+    "expectedKeywords": [
+      "instance variable",
+      "specific instance"
+    ]
+  },
+  {
+    "id": "java-068",
+    "question": "What is the default size (number of buckets) of a HashMap when created with no arguments?",
+    "expectedKeywords": [
+      "hashmap is 16",
+      "0 to 15"
+    ]
+  },
+  {
+    "id": "java-069",
+    "question": "In HashMap's index formula, what is the hash code of a null key?",
+    "expectedKeywords": [
+      "null key is 0",
+      "hashcode"
+    ]
+  },
+  {
+    "id": "java-070",
+    "question": "In HashMap, what happens to a bucket's internal linked list structure when the bucket size exceeds 8 and the table size is greater than 64?",
+    "expectedKeywords": [
+      "red-black tree",
+      "balanced tree"
+    ]
+  },
+  {
+    "id": "java-071",
+    "question": "What sorting algorithm does Collections.sort() use in Java, and what two algorithms is it a hybrid of?",
+    "expectedKeywords": [
+      "timsort",
+      "merge sort",
+      "insertion sort"
+    ]
+  },
+  {
+    "id": "java-072",
+    "question": "What sorting algorithm does Arrays.sort() use for primitive datatypes, versus for non-primitive (object) datatypes?",
+    "expectedKeywords": [
+      "dual-pivot quicksort",
+      "timsort"
+    ]
+  },
+  {
+    "id": "java-073",
+    "question": "Given String s1 = \"Hello\" (a literal) and String s3 = new String(\"Hello\"), what does s3.intern() return relative to s1?",
+    "expectedKeywords": [
+      "intern",
+      "string pool"
+    ]
+  },
+  {
+    "id": "java-074",
+    "question": "Name three scenarios in which a Java finally block will NOT execute.",
+    "expectedKeywords": [
+      "system.exit()",
+      "runtime.halt()",
+      "infinite loop"
+    ]
+  },
+  {
+    "id": "java-075",
+    "question": "As of Java 26, is Object.finalize() actually removed, and what flag can be used to test disabling it?",
+    "expectedKeywords": [
+      "--finalization=disabled",
+      "not actually removed"
+    ]
+  },
+  {
+    "id": "java-076",
+    "question": "What exception does List.of() throw when a null element is included, compared to Arrays.asList() which allows null?",
+    "expectedKeywords": [
+      "list.of()",
+      "npe",
+      "arrays.aslist()"
+    ]
+  },
+  {
+    "id": "java-077",
+    "question": "Can a static method declared in a Java interface be inherited and called on an implementing class's instance the way an abstract class's static method can?",
+    "expectedKeywords": [
+      "not inherited",
+      "interface name"
+    ]
+  },
+  {
+    "id": "java-078",
+    "question": "Can a Java abstract class have zero abstract methods?",
+    "expectedKeywords": [
+      "cannot be instantiated",
+      "abstract class"
+    ]
+  },
+  {
+    "id": "java-079",
+    "question": "Why would you use a private method inside a Java interface, available since Java 9?",
+    "expectedKeywords": [
+      "private method",
+      "default and static methods"
+    ]
+  },
+  {
+    "id": "java-080",
+    "question": "Can a Java interface extend an abstract class?",
+    "expectedKeywords": [
+      "only extend other interfaces",
+      "abstract class"
+    ]
+  },
+  {
+    "id": "java-081",
+    "question": "Why can't a Java interface have a constructor?",
+    "expectedKeywords": [
+      "cannot be instantiated directly",
+      "constructor"
+    ]
+  },
+  {
+    "id": "java-082",
+    "question": "Can an abstract class in Java be declared final? Why or why not?",
+    "expectedKeywords": [
+      "must be subclassed",
+      "cannot be subclassed"
+    ]
+  },
+  {
+    "id": "java-083",
+    "question": "Can an abstract class contain a final method in Java?",
+    "expectedKeywords": [
+      "final methods",
+      "cannot be overridden"
+    ]
+  },
+  {
+    "id": "java-084",
+    "question": "If a subclass declares a method with the same signature as a private method in its parent class, is that considered overriding?",
+    "expectedKeywords": [
+      "not inherited",
+      "new method"
+    ]
+  },
+  {
+    "id": "java-085",
+    "question": "Can a Java constructor be declared synchronized?",
+    "expectedKeywords": [
+      "not fully created",
+      "block inside a constructor"
+    ]
+  },
+  {
+    "id": "java-086",
+    "question": "How do you explicitly call a specific interface's default method when two interfaces provide conflicting default implementations (the diamond problem)?",
+    "expectedKeywords": [
+      "interfacename.super",
+      "default method"
+    ]
+  },
+  {
+    "id": "java-087",
+    "question": "What's the difference between ClassNotFoundException and NoClassDefFoundError in terms of checked exception vs error?",
+    "expectedKeywords": [
+      "classnotfoundexception",
+      "noclassdeffounderror"
+    ]
+  },
+  {
+    "id": "java-088",
+    "question": "Name two reasons Java's String class is immutable.",
+    "expectedKeywords": [
+      "thread safety",
+      "string pool"
+    ]
+  },
+  {
+    "id": "java-089",
+    "question": "What exception does a fail-fast iterator throw when the underlying collection is structurally modified during iteration, and which internal counter does it check?",
+    "expectedKeywords": [
+      "concurrentmodificationexception",
+      "modcount"
+    ]
+  },
+  {
+    "id": "java-090",
+    "question": "If a subclass declares a static method with the same signature as one in its superclass, is that overriding or something else?",
+    "expectedKeywords": [
+      "cannot be overridden",
+      "hidden"
+    ]
+  },
+  {
+    "id": "java-091",
+    "question": "What is type erasure in Java Generics, and why was it introduced?",
+    "expectedKeywords": [
+      "type erasure",
+      "bytecode"
+    ]
+  },
+  {
+    "id": "java-092",
+    "question": "What does the == operator compare for objects, versus what equals() compares?",
+    "expectedKeywords": [
+      "references",
+      "content"
+    ]
+  },
+  {
+    "id": "java-093",
+    "question": "Name two guarantees the volatile keyword provides, and one thing it does NOT provide.",
+    "expectedKeywords": [
+      "visibility",
+      "atomicity"
+    ]
+  },
+  {
+    "id": "java-094",
+    "question": "What exception is thrown if you call wait() or notify() outside a synchronized block?",
+    "expectedKeywords": [
+      "illegalmonitorstateexception",
+      "synchronized"
+    ]
+  },
+  {
+    "id": "java-095",
+    "question": "What is the difference between the 'throw' and 'throws' keywords in Java?",
+    "expectedKeywords": [
+      "part of method signature",
+      "throw"
+    ]
+  },
+  {
+    "id": "java-096",
+    "question": "Between ArrayList and LinkedList, which offers O(1) random access via get(), and which offers O(1) insertion at the beginning?",
+    "expectedKeywords": [
+      "arraylist",
+      "linkedlist",
+      "o(1)"
+    ]
+  },
+  {
+    "id": "java-097",
+    "question": "Does ConcurrentHashMap allow null keys the way HashMap does?",
+    "expectedKeywords": [
+      "no null keys",
+      "thread-safe"
+    ]
+  },
+  {
+    "id": "java-098",
+    "question": "What error occurs when the JVM stack is full, versus when the heap is full?",
+    "expectedKeywords": [
+      "stackoverflowerror",
+      "outofmemoryerror"
+    ]
+  },
+  {
+    "id": "java-099",
+    "question": "What is autoboxing in Java, and what exception can occur when unboxing a null wrapper object?",
+    "expectedKeywords": [
+      "autoboxing",
+      "nullpointerexception"
+    ]
+  },
+  {
+    "id": "java-100",
+    "question": "What goes wrong with HashMap or HashSet if you override equals() but not hashCode()?",
+    "expectedKeywords": [
+      "hashcode-equals contract",
+      "duplicate entries"
+    ]
+  },
+  {
+    "id": "java-101",
+    "question": "What is the difference between notify() and notifyAll() in Java thread signaling?",
+    "expectedKeywords": [
+      "notify()",
+      "notifyall()",
+      "one waiting thread"
+    ]
+  },
+  {
+    "id": "java-102",
+    "question": "What is the key difference between execute() and submit() in the Executor framework, in terms of return value?",
+    "expectedKeywords": [
+      "execute()",
+      "submit()",
+      "future"
+    ]
+  },
+  {
+    "id": "java-103",
+    "question": "What interface must a resource implement to be usable in a Java try-with-resources statement?",
+    "expectedKeywords": [
+      "autocloseable",
+      "try-with-resources"
+    ]
+  },
+  {
+    "id": "java-104",
+    "question": "What's the key difference between Runnable and Callable regarding return values and checked exceptions?",
+    "expectedKeywords": [
+      "runnable",
+      "callable",
+      "checked exceptions"
+    ]
+  },
+  {
+    "id": "java-105",
+    "question": "What happens if you call list.remove() directly on an ArrayList while iterating over it with a for-each loop?",
+    "expectedKeywords": [
+      "concurrentmodificationexception",
+      "fail-fast"
+    ]
+  },
+  {
+    "id": "java-106",
+    "question": "Between HashSet and TreeSet, which one maintains sorted order and what data structure backs it?",
+    "expectedKeywords": [
+      "treeset",
+      "red-black tree"
+    ]
+  },
+  {
+    "id": "java-107",
+    "question": "Between StringBuilder and StringBuffer, which one is synchronized and thread-safe?",
+    "expectedKeywords": [
+      "stringbuffer",
+      "synchronized"
+    ]
+  },
+  {
+    "id": "java-108",
+    "question": "Give an example of a Java Error versus a Java Exception, and say which one applications should generally avoid catching.",
+    "expectedKeywords": [
+      "outofmemoryerror",
+      "stackoverflowerror"
+    ]
+  },
+  {
+    "id": "java-109",
+    "question": "Can you override a private, static, or final method in Java?",
+    "expectedKeywords": [
+      "cannot override",
+      "runtime polymorphism"
+    ]
+  },
+  {
+    "id": "java-110",
+    "question": "What is the containment relationship between JDK, JRE, and JVM?",
+    "expectedKeywords": [
+      "jdk",
+      "jre",
+      "jvm"
+    ]
+  },
+  {
+    "id": "java-111",
+    "question": "What happens when you divide an int by zero in Java, versus dividing a double by 0.0?",
+    "expectedKeywords": [
+      "arithmeticexception",
+      "infinity",
+      "nan"
+    ]
+  },
+  {
+    "id": "java-112",
+    "question": "What is the key difference between Thread.sleep() and Object.wait() regarding the lock they hold?",
+    "expectedKeywords": [
+      "sleep()",
+      "wait()",
+      "releases lock"
+    ]
+  },
+  {
+    "id": "java-113",
+    "question": "What must a Serializable class implement to take manual control over serialization instead of relying on the default mechanism?",
+    "expectedKeywords": [
+      "externalizable",
+      "writeexternal",
+      "readexternal"
+    ]
+  },
+  {
+    "id": "java-114",
+    "question": "What is the purpose of the serialVersionUID field in a Serializable class?",
+    "expectedKeywords": [
+      "serialversionuid",
+      "invalidclassexception"
+    ]
+  },
+  {
+    "id": "java-115",
+    "question": "Can an interface method be declared final in Java? Can it be declared static?",
+    "expectedKeywords": [
+      "meant to be implemented",
+      "static methods"
+    ]
+  },
+  {
+    "id": "java-116",
+    "question": "What is Java's varargs syntax, and where in a method's parameter list must it appear?",
+    "expectedKeywords": [
+      "varargs",
+      "last parameter"
+    ]
+  },
+  {
+    "id": "java-117",
+    "question": "What's the difference between peek() and forEach() in Java Streams — which is intermediate and which is terminal?",
+    "expectedKeywords": [
+      "peek()",
+      "foreach()",
+      "terminal operation"
+    ]
+  },
+  {
+    "id": "java-118",
+    "question": "Can two Java methods be overloaded if they differ only in return type?",
+    "expectedKeywords": [
+      "return type alone is not sufficient",
+      "overloading"
+    ]
+  },
+  {
+    "id": "java-119",
+    "question": "What is the key difference between a checked exception and an unchecked exception in Java, in terms of what they extend?",
+    "expectedKeywords": [
+      "runtimeexception",
+      "checked",
+      "unchecked"
+    ]
+  },
+  {
+    "id": "java-120",
+    "question": "In Java 17 sealed classes, what must every permitted subclass be declared as?",
+    "expectedKeywords": [
+      "final",
+      "sealed",
+      "non-sealed"
+    ]
+  },
+  {
+    "id": "java-121",
+    "question": "What is implicitly true about all record components in a Java record?",
+    "expectedKeywords": [
+      "implicitly final",
+      "record components"
+    ]
+  },
+  {
+    "id": "java-122",
+    "question": "What method starts a virtual thread directly in Java 21's Project Loom?",
+    "expectedKeywords": [
+      "startvirtualthread",
+      "lightweight"
+    ]
+  },
+  {
+    "id": "java-123",
+    "question": "In Java 21's pattern matching for switch, what category of pattern lets you write a conditional guard on a case label?",
+    "expectedKeywords": [
+      "guarded pattern",
+      "type pattern"
+    ]
+  },
+  {
+    "id": "java-124",
+    "question": "In which JEP and Java release was the ScopedValue feature finally finalized?",
+    "expectedKeywords": [
+      "jep 506",
+      "java 25"
+    ]
+  },
+  {
+    "id": "java-125",
+    "question": "What class is used to implement Structured Concurrency in Java, and what method propagates an exception if any subtask failed?",
+    "expectedKeywords": [
+      "structuredtaskscope",
+      "throwiffailed"
+    ]
+  },
+  {
+    "id": "java-126",
+    "question": "What four methods do Sequenced Collections add for accessing elements at both ends of the collection?",
+    "expectedKeywords": [
+      "addfirst()",
+      "addlast()",
+      "getfirst()",
+      "getlast()"
+    ]
+  },
+  {
+    "id": "java-127",
+    "question": "Between Stream.toList() and collect(Collectors.toList()), which one returns an unmodifiable list?",
+    "expectedKeywords": [
+      "tolist()",
+      "unmodifiable"
+    ]
+  },
+  {
+    "id": "java-128",
+    "question": "What Java 24 feature (JEP 485) lets you write custom intermediate stream operations like windowing or scanning?",
+    "expectedKeywords": [
+      "stream gatherers",
+      "gatherer"
+    ]
+  },
+  {
+    "id": "java-129",
+    "question": "What Java 25 feature (JEP 513) allows statements to appear before super() or this() in a constructor?",
+    "expectedKeywords": [
+      "flexible constructor bodies",
+      "super()"
+    ]
+  },
+  {
+    "id": "java-130",
+    "question": "What did Generational ZGC become the default mode for, and what older ZGC mode was removed as a result?",
+    "expectedKeywords": [
+      "generational zgc",
+      "non-generational zgc"
+    ]
+  },
+  {
+    "id": "java-131",
+    "question": "What JEP number and Java version permanently disabled the Security Manager?",
+    "expectedKeywords": [
+      "jep 486",
+      "java 24"
+    ]
+  },
+  {
+    "id": "java-132",
+    "question": "What is the new name for Java's StableValue feature, renamed and redesigned for its second preview in Java 26 under JEP 526?",
+    "expectedKeywords": [
+      "lazy constants",
+      "stablevalue"
+    ]
+  },
+  {
+    "id": "java-133",
+    "question": "Which API was removed in Java 26 via JEP 504, having been deprecated since Java 17?",
+    "expectedKeywords": [
+      "applet api",
+      "jep 504"
+    ]
+  },
+  {
+    "id": "java-134",
+    "question": "In Java's release model, roughly how often is a new feature release shipped, and how often is a new LTS release designated?",
+    "expectedKeywords": [
+      "6 months",
+      "2 years"
+    ]
+  }
+]

@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Configures which systems are evaluated and where the report lands. Each system entry describes
- * one REST question-answering endpoint generically, so a new backend needs configuration only:
+ * Configures which systems are evaluated. Each system entry describes one REST
+ * question-answering endpoint generically, so a new backend needs configuration only:
  *
  * <ul>
  *   <li>{@code url} — full endpoint URL
@@ -20,12 +20,10 @@ import java.util.Map;
  */
 @ConfigurationProperties(prefix = "eval")
 public record EvalProperties(
-        String datasetPath,
-        String reportPath,
         int requestTimeoutSeconds,
-        boolean judgeEnabled,
-        String judgeModel,
-        List<SystemUnderTest> systems) {
+        String judgeSystem,
+        List<SystemUnderTest> systems,
+        List<SystemUnderTest> judges) {
 
     public record SystemUnderTest(
             String name,

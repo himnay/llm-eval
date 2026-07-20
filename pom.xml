@@ -13,7 +13,7 @@
     <artifactId>llm-eval</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>llm-eval</name>
-    <description>Local LLM model evaluation harness — keyword recall, LLM-as-judge and pairwise arena scoring</description>
+    <description>REST API for evaluating local LLM models one question at a time against a golden dataset</description>
 
     <dependencies>
         <dependency>
@@ -21,18 +21,6 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- LLM-as-judge — version managed by learning-bom via super-pom -->
-        <dependency>
-            <groupId>com.anthropic</groupId>
-            <artifactId>anthropic-java</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
