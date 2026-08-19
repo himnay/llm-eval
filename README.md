@@ -1,4 +1,4 @@
-# <span style="color:hsl(168,68%,36%)">llm-eval — Local LLM Evaluation Harness</span>
+# <span style="color:hsl(168,80%,58%)">llm-eval — Local LLM Evaluation Harness</span>
 
 <img src="image/spring-logo.png" alt="logo" width="80"/>
 
@@ -15,7 +15,7 @@ model actually know this material" is a real, checkable question rather than a p
 
 ---
 
-## <span style="color:hsl(190,68%,36%)">Table of contents</span>
+## <span style="color:hsl(306,80%,58%)">Table of contents</span>
 
 1. 🎯 [Why evaluate local models this way](#why-evaluate-local-models-this-way)
 2. 🔹 [The two scoring strategies](#the-two-scoring-strategies)
@@ -34,7 +34,7 @@ model actually know this material" is a real, checkable question rather than a p
 
 <a id="why-evaluate-local-models-this-way"></a>
 
-## <span style="color:hsl(213,68%,44%)">1. 🎯 Why evaluate local models this way</span>
+## <span style="color:hsl(83,80%,58%)">1. 🎯 Why evaluate local models this way</span>
 
 Downloading a model from Hugging Face / Ollama and running it locally is easy. Knowing whether
 it's actually *good* — good enough to trust for real work, good at code vs. good at recall, worth
@@ -50,7 +50,7 @@ under test, and one report that ranks them.
 
 <a id="the-two-scoring-strategies"></a>
 
-## <span style="color:hsl(236,68%,44%)">2. 🔹 Scoring: keyword recall + external verification</span>
+## <span style="color:hsl(221,80%,58%)">2. 🔹 Scoring: keyword recall + external verification</span>
 
 `POST /api/ask` scores every answer one deterministic way — **keyword recall** (`AnswerScorer`):
 the fraction of `expectedKeywords` found as case-insensitive substrings of the answer. Free,
@@ -68,7 +68,7 @@ an eval at all.
 
 <a id="architecture-how-evalrunner-orchestrates-a-run"></a>
 
-## <span style="color:hsl(258,68%,44%)">3. 🔀 Architecture: a stateless REST surface, no batch loop</span>
+## <span style="color:hsl(358,80%,58%)">3. 🔀 Architecture: a stateless REST surface, no batch loop</span>
 
 The app boots as a normal Spring MVC web service (`LlmEvalApplication`, default
 `WebApplicationType`) and stays up on `http://localhost:8080` — it does nothing on its own until
@@ -89,7 +89,7 @@ There's no dataset loading, no cross-product loop, and no report rendering insid
 every category/question/model combination, and writing `eval-report.md`, is the caller's job (see
 [§7](#running-it) and `CLAUDE.md`).
 
-### <span style="color:hsl(280,68%,44%)">The generic REST adapter — same shape for every local model</span>
+### <span style="color:hsl(136,80%,58%)">The generic REST adapter — same shape for every local model</span>
 
 Every model under test is described generically by `EvalProperties.SystemUnderTest`:
 
@@ -109,7 +109,7 @@ reads the answer back out of the response at `answerField` via Jackson's `JsonNo
 navigation. Every Ollama model hits the same `/api/generate` endpoint — only `extra-request-fields.model`
 differs — so **swapping or adding a locally-downloaded model is a YAML edit, never a Java change**.
 
-### <span style="color:hsl(303,68%,44%)">Per-call result shape</span>
+### <span style="color:hsl(273,80%,58%)">Per-call result shape</span>
 
 ```java
 public record AskResult(String system, String answer, Double accuracy, long latencyMs, String error) {}
@@ -124,7 +124,7 @@ looping over many questions can just check `error` per response instead of catch
 
 <a id="configuration-model--evalproperties"></a>
 
-## <span style="color:hsl(326,68%,44%)">4. 🤖 Configuration model — `EvalProperties`</span>
+## <span style="color:hsl(51,80%,50%)">4. 🤖 Configuration model — `EvalProperties`</span>
 
 Bound from `application.yaml` under `eval.*` via `@ConfigurationProperties` +
 `@ConfigurationPropertiesScan` — no explicit `@Bean` wiring.
@@ -142,7 +142,7 @@ Bound from `application.yaml` under `eval.*` via `@ConfigurationProperties` +
 
 <a id="the-golden-dataset"></a>
 
-## <span style="color:hsl(348,68%,44%)">5. 🔹 The golden dataset</span>
+## <span style="color:hsl(188,80%,58%)">5. 🔹 The golden dataset</span>
 
 `golden-dataset/` at the project root (not on the classpath — the app never reads it) holds one
 JSON file per topic instead of one monolithic file, so each topic can be curated, reviewed, and
@@ -187,7 +187,7 @@ avoided by picking specific-enough keywords per [Extending the dataset](#extendi
 
 <a id="build-super-pom-and-the-bom"></a>
 
-## <span style="color:hsl(10,68%,44%)">6. 🏗️ Build: super-pom and the BOM</span>
+## <span style="color:hsl(326,80%,58%)">6. 🏗️ Build: super-pom and the BOM</span>
 
 `llm-eval` inherits `com.org.llm:super-pom` (this workspace's corporate parent — Spring Boot
 parent, enforcer rules, Jacoco/Spotless/PITest plugin management, the `security-scan` and
@@ -207,7 +207,7 @@ happens in the BOM, not here.
 
 <a id="running-it"></a>
 
-## <span style="color:hsl(33,68%,44%)">7. 🚀 Running it</span>
+## <span style="color:hsl(103,80%,58%)">7. 🚀 Running it</span>
 
 **1. Make sure the local models you want to test are pulled and Ollama is running:**
 
@@ -257,7 +257,7 @@ mvn test   # AnswerScorer unit tests, no network calls
 
 <a id="adding-or-swapping-a-model"></a>
 
-## <span style="color:hsl(56,68%,32%)">8. 🔹 Adding or swapping a model</span>
+## <span style="color:hsl(241,80%,58%)">8. 🔹 Adding or swapping a model</span>
 
 Every entry in `eval.systems` is config, not code. To add a newly-pulled model:
 
@@ -280,7 +280,7 @@ cross-product and the comparison table.
 
 <a id="extending-the-dataset"></a>
 
-## <span style="color:hsl(78,68%,32%)">9. 🔹 Extending the dataset</span>
+## <span style="color:hsl(18,80%,58%)">9. 🔹 Extending the dataset</span>
 
 Add a new file under `golden-dataset/` at the project root (any filename) or append to an existing
 one:
@@ -306,7 +306,7 @@ match, not tokenized or semantic):
 
 <a id="failure-handling-and-resilience"></a>
 
-## <span style="color:hsl(100,68%,32%)">10. 🛡️ Failure handling and resilience</span>
+## <span style="color:hsl(156,80%,58%)">10. 🛡️ Failure handling and resilience</span>
 
 - **Per-call try/catch, not per-run.** A model's connection refusal, timeout, or malformed
   response degrades to a normal `200` response with `answer: null` and `error` populated — it
@@ -322,7 +322,7 @@ match, not tokenized or semantic):
 
 <a id="known-limitations"></a>
 
-## <span style="color:hsl(123,68%,32%)">11. 🔹 Known limitations</span>
+## <span style="color:hsl(293,80%,58%)">11. 🔹 Known limitations</span>
 
 - **Sequential by construction** — `/api/ask` handles one question at a time; total wall-clock
   time for a full run scales with `models × questions × per-call latency`, dominated by
@@ -339,7 +339,7 @@ match, not tokenized or semantic):
 
 <a id="project-layout"></a>
 
-## <span style="color:hsl(146,68%,32%)">12. 🏗️ Project layout</span>
+## <span style="color:hsl(71,80%,58%)">12. 🏗️ Project layout</span>
 
 ```
 src/main/java/com/org/llm/eval/
