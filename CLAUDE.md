@@ -3,7 +3,7 @@
 REST API for evaluating local Ollama models against a golden question dataset. No batch runner —
 Claude Code drives it question-by-question and verifies answers itself.
 
-## Running an evaluation
+## <span style="color:hsl(334,68%,44%)">Running an evaluation</span>
 
 1. The user starts the app themselves (from IntelliJ, so they can see live logs) — Claude Code
    must never run `mvn spring-boot:run` or otherwise start it. Before doing anything else, check
@@ -47,7 +47,7 @@ Claude Code drives it question-by-question and verifies answers itself.
    at the end of a run.
 8. Move to the next model from `GET /api/systems` and repeat from step 4.
 
-## Notes
+## <span style="color:hsl(154,68%,36%)">Notes</span>
 
 - Local models run on Ollama (`http://localhost:11434`) — check `curl localhost:11434/api/tags`
   and `ps aux | grep llama-server` if a model seems unreachable or stuck.
