@@ -3,11 +3,11 @@
 <img src="image/spring-logo.png" alt="logo" width="80"/>
 
 `llm-eval` is a small Spring Boot REST API with one job: given a system name and a question, ask
-the matching local model (Ollama) and hand back its answer plus a keyword-recall score. There's no
-internal batch loop or LLM-as-judge call anymore — the golden dataset lives on disk at
-`golden-dataset/`, and something external (typically Claude Code, following `CLAUDE.md`) reads it,
-drives `/api/ask` question-by-question in order, does the actual correctness verification, and
-writes `eval-report.md` incrementally as it goes.
+the matching local model (Ollama) and hand back its answer plus a keyword-recall score — and, via
+`/api/ask-judge`, optionally a grade from a second "judge" model. There's no internal batch loop —
+the golden dataset lives on disk at `golden-dataset/`, and something external (typically Claude
+Code, following `CLAUDE.md`) reads it, drives the API question-by-question in order, does the final
+correctness verification, and writes `eval-report.md` incrementally as it goes.
 
 The golden dataset isn't generic trivia. It's mined from this author's own `learning-*.md` study
 notes (Java, Spring, Kafka, Kubernetes, databases, security, system design, ...), so "does this
@@ -74,12 +74,17 @@ The app boots as a normal Spring MVC web service (`LlmEvalApplication`, default
 `WebApplicationType`) and stays up on `http://localhost:8080` — it does nothing on its own until
 asked. Two classes do all the work:
 
-- **`EvalController`** (`src/main/java/com/org/llm/eval/EvalController.java`) — the REST surface:
+- **`EvalController`** (`src/main/java/com/org/llm/eval/controller/EvalController.java`) — the REST surface:
   - `GET /api/systems` — configured model names.
   - `POST /api/ask` — `{system, question, expectedKeywords}` → `{system, answer, accuracy,
     latencyMs, error}`.
+  - `POST /api/ask-judge` — the same fields plus optional `referenceAnswer` and `judge` →
+    `{ask: {...}, judge: {judge, score, verdict, reasoning, latencyMs, error}}`. The judge is one of
+    `eval.judges` (default `eval.judge-system`) and grades with the prompt in
+    `src/main/resources/prompts/judge-system.st`; `LlmJudge` reads the first JSON object of its reply.
   - `POST /api/unload/{system}` — evicts that model from Ollama.
-- **`EvalRunner`** (`@Service`, not `CommandLineRunner`) — does the actual work per call: builds
+  - An unknown `system`/`judge` name is a `400` with the reason (`ApiExceptionHandler`).
+- **`EvalRunner`** (`service/EvalRunner.java`, a `@Service`, not `CommandLineRunner`) — does the actual work per call: builds
   the request body from `extraRequestFields` + `{questionField: question}`, POSTs to the system's
   `url`, extracts the answer at `answerField`, and (if `expectedKeywords` was supplied) scores it
   with `AnswerScorer`.
@@ -199,7 +204,7 @@ happens in the BOM, not here.
 <parent>
     <groupId>com.org.llm</groupId>
     <artifactId>super-pom</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.3</version>
 </parent>
 ```
 
@@ -329,8 +334,9 @@ match, not tokenized or semantic):
   local-model inference (CPU-only inference, or a thinking-capable model's hidden reasoning pass,
   can easily push a single answer past a minute).
 - **Keyword recall has a hard ceiling on nuance** — it cannot detect fluent nonsense that happens
-  to mention the right nouns. There's no in-process judge anymore to cover this; it relies on
-  whoever calls `/api/ask` (typically Claude Code) reading the answer and judging it.
+  to mention the right nouns. `/api/ask-judge` adds an LLM-as-judge grade, but a small local judge
+  is itself fallible, so the final call still rests with whoever drives the API (typically Claude
+  Code) reading the answer.
 - **Coverage tracks the source notes, not a fixed spec** — if a `learning-*.md` topic is added or
   rewritten later, its `golden-dataset/*.json` counterpart needs a corresponding refresh to stay
   grounded in current content.

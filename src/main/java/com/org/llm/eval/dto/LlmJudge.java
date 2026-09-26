@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * LLM-as-judge scoring: asks a separate judge model to rate a system's answer, as a richer
@@ -23,7 +21,6 @@ import java.util.regex.Pattern;
 public class LlmJudge {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final Pattern JSON_OBJECT = Pattern.compile("\\{.*}", Pattern.DOTALL);
     private static final String SYSTEM_PROMPT = loadSystemPrompt();
 
     public record Verdict(Double score, String verdict, String reasoning) {
@@ -52,16 +49,47 @@ public class LlmJudge {
         return sb.toString().stripTrailing();
     }
 
+    /**
+     * The first balanced {@code {...}} in {@code raw}, skipping braces inside JSON strings. A greedy
+     * {@code \{.*}} regex would span from the verdict to the last brace anywhere in the reply
+     * (e.g. a code sample the judge adds after its JSON) and yield unparseable text.
+     */
+    static String firstJsonObject(String raw) {
+        int start = raw.indexOf('{');
+        while (start >= 0) {
+            int depth = 0;
+            boolean inString = false;
+            for (int i = start; i < raw.length(); i++) {
+                char c = raw.charAt(i);
+                if (inString) {
+                    if (c == '\\') {
+                        i++;
+                    } else if (c == '"') {
+                        inString = false;
+                    }
+                } else if (c == '"') {
+                    inString = true;
+                } else if (c == '{') {
+                    depth++;
+                } else if (c == '}' && --depth == 0) {
+                    return raw.substring(start, i + 1);
+                }
+            }
+            start = raw.indexOf('{', start + 1);
+        }
+        return null;
+    }
+
     public static Verdict parse(String raw) {
         if (raw == null || raw.isBlank()) {
             return new Verdict(null, "unparseable", "empty judge response");
         }
-        Matcher m = JSON_OBJECT.matcher(raw);
-        if (!m.find()) {
+        String json = firstJsonObject(raw);
+        if (json == null) {
             return new Verdict(null, "unparseable", raw.strip());
         }
         try {
-            JsonNode node = MAPPER.readTree(m.group());
+            JsonNode node = MAPPER.readTree(json);
             Double score = node.path("score").isMissingNode() ? null : node.path("score").asDouble();
             String verdict = node.path("verdict").isMissingNode() ? null : node.path("verdict").asText();
             String reasoning = node.path("reasoning").isMissingNode() ? null : node.path("reasoning").asText();
