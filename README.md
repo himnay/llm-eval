@@ -204,7 +204,7 @@ happens in the BOM, not here.
 <parent>
     <groupId>com.org.llm</groupId>
     <artifactId>super-pom</artifactId>
-    <version>1.1.3</version>
+    <version>1.2.0</version>
 </parent>
 ```
 
