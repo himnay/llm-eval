@@ -8,15 +8,18 @@ eval:
   # Default LLM-as-judge model for POST /api/ask-judge (overridable per-request via "judge").
   # Must name an entry in `judges` below, not `systems` — kept as a separate list so the judge
   # model doesn't show up in GET /api/systems / get treated as a system under test.
-  judge-system: qwen3.6:27b
+  judge-system: qwen3:4b
   judges:
-    - name: qwen3.6:27b
+    - name: qwen3:4b
       url: ${OLLAMA_URL:http://localhost:11434}/api/generate
       question-field: prompt
       answer-field: response
       extra-request-fields:
-        model: qwen3.6:27b
+        model: qwen3:4b
         stream: false
+        # skip the hidden reasoning pass — judge only needs the JSON verdict, and
+        # thinking tokens dominate latency on a 4B CPU/iGPU model
+        think: false
 
   systems:
     # Every entry hits the same local Ollama daemon (http://localhost:11434/api/generate) — only
@@ -59,13 +62,6 @@ eval:
 #      extra-request-fields:
 #        model: gemma4:12b
 #        stream: false
-#    - name: qwen3.6:27b              # 27.8B
-#      url: ${OLLAMA_URL:http://localhost:11434}/api/generate
-#      question-field: prompt
-#      answer-field: response
-#      extra-request-fields:
-#        model: qwen3.6:27b
-#        stream: false
     - name: bonsai:27b               # 27.3B, ternary Q1_0 quant (~3.8GB)
       url: ${OLLAMA_URL:http://localhost:11434}/api/generate
       question-field: prompt
@@ -73,6 +69,10 @@ eval:
       extra-request-fields:
         model: bonsai:27b
         stream: false
+        # model embeds its reasoning in the response and runs ~12 tok/s on the iGPU —
+        # uncapped answers take minutes; 512 tokens ≈ 45s worst case
+        options:
+          num_predict: 512
 #    - name: deepseek-r1:32b          # 32.8B
 #      url: ${OLLAMA_URL:http://localhost:11434}/api/generate
 #      question-field: prompt
